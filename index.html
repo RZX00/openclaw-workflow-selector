@@ -386,6 +386,25 @@
     }
     </style>
   <style>
+    .selector-page > .shell {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      padding: 0;
+    }
+    .selector-page-section.section.shell {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      padding: 0 0 118px;
+      margin-bottom: 0;
+    }
+    .selector-page .topbar {
+      margin-bottom: 14px;
+      padding: 0 4px;
+    }
     .selector-page-section {
       padding-bottom: 118px;
     }
@@ -427,12 +446,17 @@
     }
     .selector-card {
       min-height: 100%;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(18, 38, 63, 0.08);
+      border-radius: 22px;
+      box-shadow: none;
+      backdrop-filter: none;
       transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
       gap: 14px;
     }
     .selector-card.is-selected {
-      border-color: rgba(47, 109, 179, 0.34);
-      box-shadow: 0 24px 60px rgba(47, 109, 179, 0.16);
+      border-color: rgba(47, 109, 179, 0.28);
+      box-shadow: 0 12px 28px rgba(47, 109, 179, 0.08);
       background: rgba(255, 255, 255, 0.9);
     }
     .selector-card:hover {
@@ -464,6 +488,8 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(18, 38, 63, 0.08);
       margin-top: auto;
     }
     .selector-price-note {
@@ -473,19 +499,19 @@
       color: var(--ink-soft);
     }
     .selector-details {
-      border-top: 1px solid rgba(18, 38, 63, 0.08);
+      border-top: 1px dashed rgba(18, 38, 63, 0.12);
       padding-top: 12px;
     }
     .selector-details summary {
       list-style: none;
       display: grid;
       place-items: center;
-      width: 38px;
-      height: 38px;
+      width: 34px;
+      height: 34px;
       margin-left: auto;
       border-radius: 999px;
-      background: rgba(18, 38, 63, 0.06);
-      border: 1px solid rgba(18, 38, 63, 0.08);
+      background: transparent;
+      border: 1px solid rgba(18, 38, 63, 0.1);
       cursor: pointer;
     }
     .selector-details summary::-webkit-details-marker {
@@ -506,12 +532,18 @@
     .selector-details-body {
       margin-top: 12px;
       display: grid;
-      gap: 10px;
+      gap: 8px;
     }
     .selector-line {
       font-size: 13px;
       line-height: 1.6;
       color: var(--ink-soft);
+      padding-bottom: 8px;
+      border-bottom: 1px dotted rgba(18, 38, 63, 0.12);
+    }
+    .selector-line:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
     }
     .selector-line strong {
       color: var(--ink);
@@ -521,7 +553,7 @@
       margin-right: 6px;
     }
     .selector-state {
-      min-height: 18px;
+      min-height: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -529,11 +561,11 @@
       color: var(--blue);
     }
     .selector-state-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
       background: var(--blue);
-      box-shadow: 0 0 0 6px rgba(47, 109, 179, 0.12);
+      box-shadow: none;
     }
     .cart-toggle {
       appearance: none;
@@ -554,7 +586,13 @@
     .selector-risk {
       border-left-width: 3px;
       font-size: 12px;
-      padding: 10px 12px;
+      padding: 8px 0 0 10px;
+      border-radius: 0;
+      background: transparent;
+    }
+    .badge {
+      background: transparent;
+      border: 1px solid rgba(18, 38, 63, 0.12);
     }
     .cart-bar {
       position: fixed;
@@ -625,24 +663,33 @@
       inset: 0;
       z-index: 40;
       display: none;
-      padding: 24px;
       background: rgba(17, 24, 39, 0.42);
       backdrop-filter: blur(10px);
-      align-items: center;
+      align-items: end;
       justify-content: center;
+      padding: 0 14px 0;
     }
     .selector-modal.is-visible {
       display: flex;
     }
     .selector-modal-panel {
       width: min(760px, calc(100vw - 28px));
-      max-height: min(88vh, 920px);
+      max-height: calc(100vh - 8px);
+      max-height: calc(100dvh - 8px);
       overflow: auto;
       padding: 20px;
-      border-radius: 28px;
+      border-radius: 28px 28px 0 0;
       background: rgba(255, 255, 255, 0.94);
       box-shadow: var(--shadow);
       border: 1px solid rgba(255, 255, 255, 0.6);
+      transform: translateY(calc(100% + 20px));
+      opacity: 0;
+      transition: transform 220ms ease, opacity 220ms ease;
+      overscroll-behavior: contain;
+    }
+    .selector-modal.is-visible .selector-modal-panel {
+      transform: translateY(0);
+      opacity: 1;
     }
     .selector-modal-head {
       display: flex;
@@ -676,16 +723,21 @@
     }
     .cart-modal-list {
       display: grid;
-      gap: 10px;
+      gap: 0;
     }
     .cart-modal-item {
       display: flex;
       justify-content: space-between;
       gap: 14px;
       align-items: start;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(18, 38, 63, 0.05);
+      padding: 14px 0;
+      border-radius: 0;
+      background: transparent;
+      border-top: 1px solid rgba(18, 38, 63, 0.08);
+    }
+    .cart-modal-item:first-child {
+      border-top: 0;
+      padding-top: 0;
     }
     .cart-modal-item-main {
       display: grid;
@@ -721,12 +773,14 @@
       padding: 0;
     }
     .cart-modal-empty {
-      padding: 18px;
-      border-radius: 18px;
-      background: rgba(18, 38, 63, 0.05);
+      padding: 16px 0;
+      border-radius: 0;
+      background: transparent;
       color: var(--ink-soft);
       font-size: 14px;
       line-height: 1.6;
+      border-top: 1px dashed rgba(18, 38, 63, 0.16);
+      border-bottom: 1px dashed rgba(18, 38, 63, 0.16);
     }
     .cart-modal-footer, .receipt-actions {
       display: flex;
@@ -780,30 +834,24 @@
     .receipt-sheet {
       position: relative;
       overflow: hidden;
-      padding: 18px;
-      border-radius: 30px;
-      background: rgba(255, 250, 242, 0.96);
-      border: 1px solid rgba(18, 38, 63, 0.08);
-      box-shadow: var(--shadow);
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
     }
     .receipt-sheet::after {
-      content: "";
-      position: absolute;
-      left: 16px;
-      right: 16px;
-      bottom: -9px;
-      height: 18px;
-      background:
-        radial-gradient(circle at 9px 0, transparent 9px, rgba(18, 38, 63, 0.08) 9px, rgba(18, 38, 63, 0.08) 10px, transparent 10px)
-        repeat-x;
-      background-size: 18px 18px;
-      opacity: 0.32;
+      display: none;
     }
     .receipt-paper {
       position: relative;
       z-index: 1;
       display: grid;
       gap: 12px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255, 250, 242, 0.96);
+      border: 1px solid rgba(18, 38, 63, 0.08);
       font-family: "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     }
     .receipt-head {
@@ -876,12 +924,14 @@
       line-height: 1;
     }
     .receipt-empty {
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(18, 38, 63, 0.05);
+      padding: 12px 0;
+      border-radius: 0;
+      background: transparent;
       color: var(--ink-soft);
       font-size: 13px;
       line-height: 1.6;
+      border-top: 1px dashed rgba(18, 38, 63, 0.16);
+      border-bottom: 1px dashed rgba(18, 38, 63, 0.16);
     }
     .receipt-warning-note {
       border-left: 3px solid var(--danger);
@@ -930,13 +980,17 @@
       gap: 7px;
     }
     .receipt-install-name {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(18, 38, 63, 0.05);
+      padding: 8px 0;
+      border-radius: 0;
+      background: transparent;
       font-size: 12px;
       line-height: 1.45;
       color: var(--ink);
       word-break: break-word;
+      border-bottom: 1px dashed rgba(18, 38, 63, 0.14);
+    }
+    .receipt-install-name:last-child {
+      border-bottom: 0;
     }
     .receipt-footer-note {
       padding-top: 8px;
@@ -1023,12 +1077,12 @@
         font-size: 25px;
       }
       .selector-modal {
-        padding: 12px;
-        align-items: end;
+        padding: 0;
       }
       .selector-modal-panel {
-        width: 100%;
-        max-height: min(88vh, 820px);
+        width: 100vw;
+        max-height: calc(100vh - 2px);
+        max-height: calc(100dvh - 2px);
         border-radius: 24px 24px 0 0;
         padding: 18px;
       }
@@ -1059,7 +1113,7 @@
     </style>
 </head>
 <body>
-  <main class="page">
+  <main class="page selector-page">
     <div class="shell">
       <div class="topbar">
         <div class="brand">
