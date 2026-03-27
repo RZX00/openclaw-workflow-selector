@@ -558,7 +558,7 @@
       justify-content: space-between;
       align-items: start;
       gap: 10px;
-      padding-right: 40px;
+      padding-right: 46px;
     }
     .selector-card-main {
       display: grid;
@@ -567,7 +567,7 @@
     }
     .selector-card-main h3 {
       margin: 0;
-      padding-right: 40px;
+      padding-right: 46px;
     }
     .selector-purchase-row {
       display: flex;
@@ -605,7 +605,7 @@
       cursor: pointer;
       position: absolute;
       top: 14px;
-      right: 14px;
+      right: 20px;
       z-index: 3;
       opacity: 0.78;
       transition: opacity 120ms ease, transform 120ms ease;
@@ -691,20 +691,21 @@
     }
     .cart-toggle::before {
       content: "";
-      width: 10px;
-      height: 10px;
+      width: 15px;
+      height: 14px;
       display: inline-block;
       background:
-        linear-gradient(currentColor 0 0) center / 2px 10px no-repeat,
-        linear-gradient(currentColor 0 0) center / 10px 2px no-repeat;
+        radial-gradient(circle at 4px 12px, currentColor 0 1.7px, transparent 1.9px),
+        radial-gradient(circle at 11px 12px, currentColor 0 1.7px, transparent 1.9px),
+        linear-gradient(currentColor 0 0) 3px 8px / 9px 2px no-repeat,
+        linear-gradient(currentColor 0 0) 4px 5px / 8px 2px no-repeat,
+        linear-gradient(currentColor 0 0) 5px 2px / 7px 2px no-repeat,
+        linear-gradient(currentColor 0 0) 2px 1px / 2px 9px no-repeat,
+        linear-gradient(currentColor 0 0) 0 0 / 6px 2px no-repeat;
       flex: 0 0 auto;
     }
     .cart-toggle.is-selected {
       background: var(--red);
-    }
-    .cart-toggle.is-selected::before {
-      background:
-        linear-gradient(currentColor 0 0) center / 10px 2px no-repeat;
     }
     .selector-risk {
       border-left-width: 3px;
@@ -1189,10 +1190,10 @@
         padding-right: 0;
       }
       .selector-card-head {
-        padding-right: 34px;
+        padding-right: 40px;
       }
       .selector-card-main h3 {
-        padding-right: 34px;
+        padding-right: 40px;
       }
       .selector-summary {
         display: none;
@@ -1211,7 +1212,7 @@
       }
       .selector-details summary {
         top: 12px;
-        right: 12px;
+        right: 16px;
       }
       .cart-bar {
         padding-left: max(8px, env(safe-area-inset-left));
