@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenClaw 工作流选购页</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --paper: rgba(255, 255, 255, 0.82);
+      --paper-strong: rgba(255, 255, 255, 0.92);
+      --ink: #12263f;
+      --ink-soft: #6f7b8f;
+      --line: rgba(18, 38, 63, 0.12);
+      --navy: #18314f;
+      --blue: #2f6db3;
+      --emerald: #28715f;
+      --gold: #b88c37;
+      --orange: #cf6d3c;
+      --red: #a84b3a;
+      --tier-s: #cf6d3c;
+      --tier-a: #2f6db3;
+      --tier-b: #b88c37;
+      --safe: #28715f;
+      --warn: #b77a25;
+      --danger: #a84b3a;
+      --shadow: 0 24px 60px rgba(17, 24, 39, 0.12);
+      --display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      --ui: "Avenir Next", "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--ui);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(207, 109, 60, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(47, 109, 179, 0.16), transparent 26%),
+        linear-gradient(180deg, #fbf7f1 0%, var(--bg) 58%, #ece2d1 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(18, 38, 63, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 38, 63, 0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent 82%);
+      pointer-events: none;
+    }
+    a { color: inherit; }
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(1440px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 24px 0 72px;
+    }
+    .shell, .panel, .skill-card, .workflow-card, .stage-card, .focus-card, .metric-card {
+      background: var(--paper);
+      border: 1px solid rgba(255, 255, 255, 0.56);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .shell { padding: 26px; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .brand {
+      display: grid;
+      gap: 4px;
+    }
+    .brand small, .eyebrow {
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-size: 11px;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .nav a {
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(18, 38, 63, 0.06);
+      color: var(--ink-soft);
+      font-size: 13px;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+    .nav a.active {
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.92);
+    }
+    .nav a:hover { transform: translateY(-1px); }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .hero-main {
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+      min-height: 320px;
+    }
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      right: -46px;
+      bottom: -54px;
+      width: 260px;
+      height: 260px;
+      border-radius: 40px;
+      transform: rotate(14deg);
+      background: linear-gradient(135deg, rgba(207, 109, 60, 0.82), rgba(47, 109, 179, 0.70));
+      opacity: 0.92;
+    }
+    .hero-main h1, h2, h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 600;
+      line-height: 0.98;
+    }
+    .hero-main h1 {
+      position: relative;
+      z-index: 1;
+      max-width: 10ch;
+      font-size: clamp(44px, 6vw, 76px);
+    }
+    .lede {
+      position: relative;
+      z-index: 1;
+      margin-top: 18px;
+      max-width: 58ch;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+    .hero-tags, .chips, .workflow-seq {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .hero-tags { position: relative; z-index: 1; margin-top: 22px; }
+    .hero-tags span, .chips span, .badge, .workflow-seq span {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      line-height: 1;
+      background: rgba(18, 38, 63, 0.08);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    .hero-side {
+      display: grid;
+      gap: 14px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .metric-card {
+      padding: 20px;
+      display: grid;
+      gap: 8px;
+    }
+    .metric-card strong {
+      font-size: clamp(28px, 3.2vw, 42px);
+      font-family: var(--display);
+      line-height: 1;
+    }
+    .metric-card span { color: var(--ink-soft); font-size: 13px; }
+    .stat-list {
+      padding: 18px 20px;
+      display: grid;
+      gap: 12px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .stat-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .section {
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+    .section-head h2 {
+      font-size: clamp(28px, 4vw, 48px);
+    }
+    .section-head p {
+      max-width: 48ch;
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .grid-2, .grid-3, .skill-grid, .workflow-grid, .stage-grid, .focus-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .skill-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .workflow-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stage-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .focus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stage-card, .skill-card, .workflow-card, .focus-card {
+      padding: 20px;
+      display: grid;
+      gap: 12px;
+    }
+    .stage-card h3, .focus-card h3 { font-size: 24px; }
+    .stage-card p, .skill-card p, .workflow-card p, .focus-card p {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 14px;
+    }
+    .meta-item {
+      display: grid;
+      gap: 4px;
+      font-size: 13px;
+    }
+    .meta-item strong {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-family: var(--ui);
+    }
+    .skill-top, .workflow-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      background: rgba(18, 38, 63, 0.08);
+      color: var(--ink);
+    }
+    .badge.tier {
+      color: white;
+      background: var(--badge-color, var(--navy));
+    }
+    .skill-card h3, .workflow-card h3 { font-size: 26px; }
+    .skill-head, .workflow-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+    }
+    .score-pill {
+      min-width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: rgba(18, 38, 63, 0.08);
+      font-family: var(--display);
+      font-size: 26px;
+    }
+    .warning {
+      border-left: 4px solid var(--danger);
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(168, 75, 58, 0.08);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--danger);
+    }
+    .evidence-list {
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .evidence-list a {
+      color: var(--blue);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .filter-row select, .filter-row button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+    }
+    .filter-row button {
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.92);
+      cursor: pointer;
+    }
+    .stage-callout {
+      display: grid;
+      gap: 10px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(18, 38, 63, 0.05);
+    }
+    .links-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .links-row a {
+      text-decoration: none;
+      font-size: 13px;
+      color: var(--blue);
+    }
+    .footer {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .footer div {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(18, 38, 63, 0.86);
+      color: rgba(255, 255, 255, 0.88);
+      display: grid;
+      gap: 4px;
+    }
+    .footer strong {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.72;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 1180px) {
+      .hero, .grid-2, .grid-3, .skill-grid, .workflow-grid, .stage-grid, .focus-grid, .footer {
+        grid-template-columns: 1fr;
+      }
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+    }
+    @media (max-width: 760px) {
+      .page { width: min(100vw - 20px, 100%); padding-top: 16px; }
+      .shell, .section { padding: 18px; }
+      .hero-main, .metric-card, .stage-card, .skill-card, .workflow-card, .focus-card { padding: 18px; }
+      .topbar { flex-direction: column; align-items: start; }
+      .metric-grid, .meta-grid { grid-template-columns: 1fr; }
+      .hero-main h1 { font-size: 42px; }
+    }
+    </style>
+  <style>
+    .selector-page-section {
+      padding-bottom: 118px;
+    }
+    .selector-toolbar {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .selector-toolbar .eyebrow {
+      color: var(--ink-soft);
+    }
+    .selector-filter-row button {
+      background: rgba(18, 38, 63, 0.06);
+      color: var(--ink);
+      border: 1px solid rgba(18, 38, 63, 0.12);
+    }
+    .selector-filter-row button.active {
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.94);
+      border-color: transparent;
+    }
+    .selector-toolbar-note {
+      min-width: 260px;
+      padding: 14px 18px;
+      border-radius: 22px;
+      background: rgba(18, 38, 63, 0.05);
+      display: grid;
+      gap: 4px;
+    }
+    .selector-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .selector-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .selector-card {
+      min-height: 100%;
+      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+      gap: 14px;
+    }
+    .selector-card.is-selected {
+      border-color: rgba(47, 109, 179, 0.34);
+      box-shadow: 0 24px 60px rgba(47, 109, 179, 0.16);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .selector-card:hover {
+      transform: translateY(-2px);
+    }
+    .selector-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+    }
+    .selector-card-main {
+      display: grid;
+      gap: 8px;
+    }
+    .selector-inline-price {
+      font-family: var(--display);
+      font-size: 36px;
+      line-height: 0.95;
+    }
+    .selector-summary {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .selector-card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: auto;
+    }
+    .selector-price-note {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .selector-details {
+      border-top: 1px solid rgba(18, 38, 63, 0.08);
+      padding-top: 12px;
+    }
+    .selector-details summary {
+      list-style: none;
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-left: auto;
+      border-radius: 999px;
+      background: rgba(18, 38, 63, 0.06);
+      border: 1px solid rgba(18, 38, 63, 0.08);
+      cursor: pointer;
+    }
+    .selector-details summary::-webkit-details-marker {
+      display: none;
+    }
+    .selector-details summary::after {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-right: 2px solid var(--blue);
+      border-bottom: 2px solid var(--blue);
+      transform: rotate(45deg) translateY(-1px);
+      transition: transform 160ms ease;
+    }
+    .selector-details[open] summary::after {
+      transform: rotate(-135deg) translateY(-1px);
+    }
+    .selector-details-body {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .selector-line {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+    .selector-line strong {
+      color: var(--ink);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-right: 6px;
+    }
+    .selector-state {
+      min-height: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--blue);
+    }
+    .selector-state-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--blue);
+      box-shadow: 0 0 0 6px rgba(47, 109, 179, 0.12);
+    }
+    .cart-toggle {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.94);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 44px;
+    }
+    .cart-toggle.is-selected {
+      background: var(--red);
+    }
+    .selector-risk {
+      border-left-width: 3px;
+      font-size: 12px;
+      padding: 10px 12px;
+    }
+    .cart-bar {
+      position: fixed;
+      left: 50%;
+      bottom: max(12px, calc(env(safe-area-inset-bottom) + 10px));
+      z-index: 30;
+      width: min(680px, calc(100vw - 28px));
+      transform: translateX(-50%);
+    }
+    .cart-bar-button {
+      width: 100%;
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: rgba(18, 38, 63, 0.94);
+      color: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 22px 54px rgba(17, 24, 39, 0.28);
+      font: inherit;
+      cursor: pointer;
+      backdrop-filter: blur(18px);
+    }
+    .cart-bar-button:disabled {
+      opacity: 0.92;
+      cursor: not-allowed;
+    }
+    .cart-bar-meta {
+      display: grid;
+      gap: 2px;
+      text-align: left;
+    }
+    .cart-bar-meta strong {
+      font-size: 16px;
+      line-height: 1.1;
+    }
+    .cart-bar-meta span {
+      font-size: 12px;
+      opacity: 0.76;
+    }
+    .cart-bar-total {
+      font-family: var(--display);
+      font-size: 30px;
+      line-height: 1;
+    }
+    .cart-bar-bump {
+      animation: cart-bump 520ms ease;
+    }
+    .cart-fly-chip {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 60;
+      pointer-events: none;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.96);
+      font-size: 12px;
+      box-shadow: 0 16px 34px rgba(17, 24, 39, 0.24);
+      transform: translate(-50%, -50%);
+    }
+    .selector-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      padding: 24px;
+      background: rgba(17, 24, 39, 0.42);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+    }
+    .selector-modal.is-visible {
+      display: flex;
+    }
+    .selector-modal-panel {
+      width: min(760px, calc(100vw - 28px));
+      max-height: min(88vh, 920px);
+      overflow: auto;
+      padding: 20px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    .selector-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .selector-modal-head h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      margin: 0;
+    }
+    .selector-modal-head p {
+      margin: 6px 0 0;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .selector-close {
+      appearance: none;
+      border: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: rgba(18, 38, 63, 0.08);
+      color: var(--ink);
+      font: inherit;
+      font-size: 22px;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .cart-modal-list {
+      display: grid;
+      gap: 10px;
+    }
+    .cart-modal-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(18, 38, 63, 0.05);
+    }
+    .cart-modal-item-main {
+      display: grid;
+      gap: 5px;
+    }
+    .cart-modal-item-main strong {
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    .cart-modal-item-main span {
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .cart-modal-item-side {
+      display: grid;
+      justify-items: end;
+      gap: 8px;
+    }
+    .cart-modal-item-side strong {
+      font-family: var(--display);
+      font-size: 28px;
+      line-height: 1;
+    }
+    .cart-remove {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--red);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 0;
+    }
+    .cart-modal-empty {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(18, 38, 63, 0.05);
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .cart-modal-footer, .receipt-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    .cart-modal-summary {
+      display: grid;
+      gap: 2px;
+    }
+    .cart-modal-summary span {
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+    .cart-modal-summary strong {
+      font-family: var(--display);
+      font-size: 34px;
+      line-height: 1;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: end;
+    }
+    .modal-actions button, .receipt-actions button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      background: rgba(18, 38, 63, 0.08);
+      color: var(--ink);
+    }
+    .modal-actions button.primary, .receipt-actions button.primary {
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.94);
+    }
+    .modal-actions button:disabled, .receipt-actions button:disabled, .cart-bar-button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .receipt-actions {
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+    .receipt-sheet {
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border-radius: 30px;
+      background: rgba(255, 250, 242, 0.96);
+      border: 1px solid rgba(18, 38, 63, 0.08);
+      box-shadow: var(--shadow);
+    }
+    .receipt-sheet::after {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: -9px;
+      height: 18px;
+      background:
+        radial-gradient(circle at 9px 0, transparent 9px, rgba(18, 38, 63, 0.08) 9px, rgba(18, 38, 63, 0.08) 10px, transparent 10px)
+        repeat-x;
+      background-size: 18px 18px;
+      opacity: 0.32;
+    }
+    .receipt-paper {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 12px;
+      font-family: "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    .receipt-head {
+      display: grid;
+      gap: 4px;
+      text-align: center;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed rgba(18, 38, 63, 0.2);
+    }
+    .receipt-store {
+      font-size: 18px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .receipt-kicker, .receipt-small {
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+    .receipt-meta {
+      display: grid;
+      gap: 4px;
+      font-size: 12px;
+    }
+    .receipt-meta-row, .receipt-total-row, .receipt-install-item, .receipt-item-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+    .receipt-section-title {
+      padding-top: 10px;
+      border-top: 1px dashed rgba(18, 38, 63, 0.2);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .receipt-items, .receipt-install-list, .receipt-warning-list {
+      display: grid;
+      gap: 8px;
+    }
+    .receipt-item {
+      display: grid;
+      gap: 5px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(18, 38, 63, 0.18);
+    }
+    .receipt-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    .receipt-item-name {
+      max-width: 72%;
+      line-height: 1.5;
+    }
+    .receipt-item-note {
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+    .receipt-total {
+      display: grid;
+      gap: 7px;
+      padding-top: 10px;
+      border-top: 2px solid rgba(18, 38, 63, 0.16);
+    }
+    .receipt-total-row strong {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .receipt-empty {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(18, 38, 63, 0.05);
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .receipt-warning-note {
+      border-left: 3px solid var(--danger);
+      padding-left: 10px;
+      color: var(--danger);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .receipt-details {
+      border-top: 1px dashed rgba(18, 38, 63, 0.2);
+      padding-top: 10px;
+    }
+    .receipt-details summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .receipt-details summary::-webkit-details-marker {
+      display: none;
+    }
+    .receipt-details summary::after {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-right: 2px solid var(--blue);
+      border-bottom: 2px solid var(--blue);
+      transform: rotate(45deg) translateY(-1px);
+      transition: transform 160ms ease;
+      flex: 0 0 auto;
+    }
+    .receipt-details[open] summary::after {
+      transform: rotate(-135deg) translateY(-1px);
+    }
+    .receipt-details-body {
+      margin-top: 10px;
+    }
+    .receipt-install-list {
+      display: grid;
+      gap: 7px;
+    }
+    .receipt-install-name {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(18, 38, 63, 0.05);
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--ink);
+      word-break: break-word;
+    }
+    .receipt-footer-note {
+      padding-top: 8px;
+      border-top: 1px dashed rgba(18, 38, 63, 0.2);
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      text-align: center;
+    }
+    body.selector-modal-open {
+      overflow: hidden;
+    }
+    @keyframes cart-bump {
+      0%, 100% { transform: scale(1); }
+      35% { transform: scale(1.035); }
+      55% { transform: scale(0.985); }
+    }
+    @media (max-width: 1320px) {
+      .selector-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 760px) {
+      .selector-page-section {
+        padding-bottom: 108px;
+      }
+      .selector-toolbar {
+        gap: 10px;
+      }
+      .selector-filter-row {
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+      }
+      .selector-filter-row::-webkit-scrollbar {
+        display: none;
+      }
+      .selector-filter-row button {
+        flex: 0 0 auto;
+      }
+      .selector-grid {
+        grid-template-columns: 1fr;
+      }
+      .selector-grid {
+        grid-template-columns: 1fr;
+      }
+      .selector-card {
+        gap: 12px;
+        padding: 16px;
+      }
+      .selector-summary {
+        display: none;
+      }
+      .selector-card-main {
+        gap: 6px;
+      }
+      .selector-inline-price {
+        font-size: 30px;
+      }
+      .selector-card-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .cart-toggle {
+        width: 100%;
+      }
+      .selector-details {
+        padding-top: 10px;
+      }
+      .cart-bar {
+        width: calc(100vw - 20px);
+        bottom: max(10px, calc(env(safe-area-inset-bottom) + 6px));
+      }
+      .cart-bar-button {
+        padding: 12px 14px;
+        gap: 12px;
+      }
+      .cart-bar-meta strong {
+        font-size: 15px;
+      }
+      .cart-bar-total {
+        font-size: 25px;
+      }
+      .selector-modal {
+        padding: 12px;
+        align-items: end;
+      }
+      .selector-modal-panel {
+        width: 100%;
+        max-height: min(88vh, 820px);
+        border-radius: 24px 24px 0 0;
+        padding: 18px;
+      }
+      .selector-modal-head {
+        margin-bottom: 14px;
+      }
+      .selector-modal-head h2 {
+        font-size: 28px;
+      }
+      .cart-modal-item {
+        padding: 12px 14px;
+      }
+      .cart-modal-footer, .receipt-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .modal-actions, .receipt-actions {
+        width: 100%;
+      }
+      .modal-actions button, .receipt-actions button {
+        width: 100%;
+        min-height: 46px;
+      }
+      .receipt-sheet {
+        border-radius: 24px;
+      }
+    }
+    </style>
+</head>
+<body>
+  <main class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <small>OpenClaw</small>
+          <strong>OpenClaw 工作流选购页</strong>
+        </div>
+        
+      </div>
+      
+            <section class="section shell selector-page-section">
+              
+    <div class="selector-toolbar">
+      <div class="filter-row selector-filter-row">
+        <button type="button" class="active" data-selector-filter="all">全部</button>
+        <button type="button" data-selector-filter="academic">学术</button>
+        <button type="button" data-selector-filter="general">通用</button>
+        <button type="button" data-selector-filter="selected">已选</button>
+      </div>
+    </div>
+    
+              <div class="selector-grid" id="selector-grid">
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="frontier-trend-radar"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="frontier-trend-radar"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>前沿趋势雷达工作流</h3>
+        <strong class="selector-inline-price">¥199</strong>
+        <p class="selector-summary">把一个模糊研究方向压缩成可开题的趋势雷达、关键词簇和追踪清单。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>准备开题的硕博、PI、新入组 RA</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备开题、写开题报告、导师要求先摸清这个方向有没有新东西。</div>
+          <div class="selector-line"><strong>能得到什么</strong>趋势雷达、一页式选题地图、关键词簇、重点作者表、每周跟踪清单。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Discovery / 入口款</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="frontier-trend-radar">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="database-search-preprint-tracker"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="database-search-preprint-tracker"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>数据库检索与预印本跟踪工作流</h3>
+        <strong class="selector-inline-price">¥199</strong>
+        <p class="selector-summary">把多数据库检索和新文跟踪变成稳定、可复用的标准工序。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>研究生、科研助理、医学和 AI/CS 方向研究团队</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备综述、准备实验前调研、导师要求先把文献搜齐。</div>
+          <div class="selector-line"><strong>能得到什么</strong>检索式模板、候选文献表、数据库覆盖说明、新文跟踪清单。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Lite / 标准层</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="database-search-preprint-tracker">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="systematic-review-evidence-table"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="systematic-review-evidence-table"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>系统综述筛选与证据表工作流</h3>
+        <strong class="selector-inline-price">¥299</strong>
+        <p class="selector-summary">把海量候选文献压缩成 PRISMA 风格筛选流程和 evidence table。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>医学生、做系统综述的研究生、科研顾问与 RA 团队</div>
+          <div class="selector-line"><strong>什么时候用</strong>要做 systematic review、evidence synthesis、导师要求把筛选过程讲清楚。</div>
+          <div class="selector-line"><strong>能得到什么</strong>PRISMA 式筛选记录、纳入排除清单、evidence table、综述框架。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Review / 主成交层</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="systematic-review-evidence-table">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="zotero-library-pipeline"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="zotero-library-pipeline"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>Zotero 建库与批量归档工作流</h3>
+        <strong class="selector-inline-price">¥199</strong>
+        <p class="selector-summary">把 DOI、PDF、标签和 collection 整理成真正能长期使用的研究资料库。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>重度 Zotero 用户、研究助理、论文辅导与知识型团队</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备系统整理文献库、导师要求共享文献库、准备开始长线项目。</div>
+          <div class="selector-line"><strong>能得到什么</strong>清洗后的 Zotero 库、collection 结构说明、标签规范、引用卫生检查表。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Ops / 高感知模块</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="zotero-library-pipeline">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="paper-reading-annotation-coach"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="paper-reading-annotation-coach"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>论文精读批注与导师式摘要工作流</h3>
+        <strong class="selector-inline-price">¥99</strong>
+        <p class="selector-summary">把“看过论文”升级成“真正读懂并沉淀了方法、结果和限制”。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>硕博生、读 paper 的工程师、论文阅读训练用户</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备组会汇报、导师要求精读几篇关键论文、需要快速掌握一个方法。</div>
+          <div class="selector-line"><strong>能得到什么</strong>结构化摘要、带批注 PDF、阅读卡片、组会版要点整理。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Reading / 训练营型产品</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="paper-reading-annotation-coach">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="academic-translation-terminology-lane"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="academic-translation-terminology-lane"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>文献翻译与术语对照工作流</h3>
+        <strong class="selector-inline-price">¥99</strong>
+        <p class="selector-summary">把外文论文翻成可读、可核对、术语一致的研究输入，而不是粗暴机翻。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>需要读英文论文的中文研究者、跨语种课题组、需要双语材料的导师和学生</div>
+          <div class="selector-line"><strong>什么时候用</strong>要快速读外文论文、做双语阅读材料、需要把关键术语稳定下来。</div>
+          <div class="selector-line"><strong>能得到什么</strong>双语摘要、术语对照表、关键段落翻译稿、带原文锚点的阅读材料。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Reading / 专项刚需包</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="academic-translation-terminology-lane">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="gap-contradiction-map"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="gap-contradiction-map"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>研究空白识别与争议点梳理工作流</h3>
+        <strong class="selector-inline-price">¥399</strong>
+        <p class="selector-summary">把相关工作从“罗列”升级成 gap map、争议图谱和 claim 强弱判断。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>准备开题的研究生、写 proposal 的老师、需要差异化 insight 的科研顾问</div>
+          <div class="selector-line"><strong>什么时候用</strong>开题前要证明创新点、基金申请要讲 significance、答辩时要解释为什么要做这个题。</div>
+          <div class="selector-line"><strong>能得到什么</strong>gap map、争议点列表、claim grading 表、开题论证稿骨架。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Premium / 差异化层</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="gap-contradiction-map">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="hypothesis-protocol-design"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="hypothesis-protocol-design"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>假设生成与实验/协议设计工作流</h3>
+        <strong class="selector-inline-price">¥499</strong>
+        <p class="selector-summary">把文献和观察线索转成可检验假设、变量设计和 protocol 草案。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>准备课题设计的老师、PI、研究生和方法顾问</div>
+          <div class="selector-line"><strong>什么时候用</strong>要写 proposal、立项书、实验设计书或 protocol 草案。</div>
+          <div class="selector-line"><strong>能得到什么</strong>假设框架、变量表、研究流程图、protocol 草案。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Premium / 咨询型产品</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="hypothesis-protocol-design">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="lab-knowledge-base-os"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="lab-knowledge-base-os"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>实验记录与研究知识库工作流</h3>
+        <strong class="selector-inline-price">¥399</strong>
+        <p class="selector-summary">把研究日志、实验记录和知识卡片做成长期可追溯资产。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>课题组、实验室、长期做研究内容沉淀的团队</div>
+          <div class="selector-line"><strong>什么时候用</strong>实验室准备搭研究知识库、需要沉淀研究 SOP、要做长期项目跟踪。</div>
+          <div class="selector-line"><strong>能得到什么</strong>研究知识库结构、实验日志模板、示例项目库、检索与复盘规则。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Team / 订阅型方案</div>
+          <div class="warning selector-risk">涉及账号权限或人工校验，更适合项目制交付。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="lab-knowledge-base-os">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="data-analysis-meta-lab"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="data-analysis-meta-lab"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>数据分析、统计与 Meta 分析工作流</h3>
+        <strong class="selector-inline-price">¥299</strong>
+        <p class="selector-summary">把原始研究数据转成可复现的统计结果、图表和方法说明。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>需要做统计分析的研究生、RA、方法顾问和跨研究整合团队</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备做论文结果分析、写方法章节、或者做跨研究整合。</div>
+          <div class="selector-line"><strong>能得到什么</strong>EDA 摘要、统计检验说明、图表、分析 notebook、Meta 分析要点。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Analytics / 方法服务</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="data-analysis-meta-lab">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="manuscript-writing-revision"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="manuscript-writing-revision"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>论文写作与改稿工作流</h3>
+        <strong class="selector-inline-price">¥299</strong>
+        <p class="selector-summary">围绕证据库、引用库和实验结果，产出真正可投稿的成稿与改稿支持。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>正在写论文、改稿、回审的研究生、老师和科研写作顾问</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备写初稿、导师批完要改、收到 reviewer comments 后要回审。</div>
+          <div class="selector-line"><strong>能得到什么</strong>章节提纲、论文初稿或改稿版、review checklist、评审回复骨架。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Pro / 主 SKU</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="manuscript-writing-revision">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="grant-submission-defense-suite"
+      data-segment="academic"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">学术</span>
+        </div>
+        <div class="selector-state" data-card-state="grant-submission-defense-suite"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>基金申请、投稿质检与答辩展示工作流</h3>
+        <strong class="selector-inline-price">¥499</strong>
+        <p class="selector-summary">把 grant、submission QA、slides、poster 和答辩材料打成最后一公里冲刺包。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>准备申请基金、投稿或答辩的老师、研究生和科研顾问</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备申报项目、投稿前冲刺、答辩前一周集中准备。</div>
+          <div class="selector-line"><strong>能得到什么</strong>grant sections、submission QA 清单、答辩 slides、大纲、格式化模板建议。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Academic Submission / 冲刺包</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="grant-submission-defense-suite">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="indie-launch-factory"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="indie-launch-factory"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>独立开发者从代码到发布工作流</h3>
+        <strong class="selector-inline-price">¥299</strong>
+        <p class="selector-summary">把代码实现、设计同步和发布物料压进一条可交付的 launch 链。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>独立开发者、AI 创业者、小团队 PM/工程师</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备发新产品、更新大版本、做公开发布和演示材料。</div>
+          <div class="selector-line"><strong>能得到什么</strong>功能实现清单、竞品截图、设计同步记录、营销配图、发布 deck。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Developer Launch / 标准包</div>
+          <div class="warning selector-risk">涉及账号权限或人工校验，更适合项目制交付。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="indie-launch-factory">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="industry-competitive-intel"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="industry-competitive-intel"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>行业/竞品情报跟踪工作流</h3>
+        <strong class="selector-inline-price">¥199</strong>
+        <p class="selector-summary">对官网、社媒、GitHub 和论坛做连续监控，输出可复用的情报周报。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>咨询顾问、增长团队、产品负责人、行业研究者</div>
+          <div class="selector-line"><strong>什么时候用</strong>要盯竞品更新、行业动态、融资动作或产品发布节奏。</div>
+          <div class="selector-line"><strong>能得到什么</strong>竞品监控表、更新日志、情报周报、重点事件提醒。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Intel Tracker / 订阅包</div>
+          <div class="warning selector-risk">涉及账号权限或人工校验，更适合项目制交付。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="industry-competitive-intel">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="stock-monitoring-postmortem"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="stock-monitoring-postmortem"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>股票监控与事件复盘工作流</h3>
+        <strong class="selector-inline-price">¥99</strong>
+        <p class="selector-summary">把个股、公告、社媒和价格数据整理成监控卡与复盘卡，而不是卖成自动交易神话。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>个人投资者、行业观察者、自媒体投研博主</div>
+          <div class="selector-line"><strong>什么时候用</strong>要跟踪个股、做盘后复盘、整理一个标的的事件时间线。</div>
+          <div class="selector-line"><strong>能得到什么</strong>事件时间线、监控表、价格与指标表、周度或盘后复盘卡。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Investor Signals / 复盘包</div>
+          <div class="warning selector-risk">非投资建议，不承诺收益，不做自动交易。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="stock-monitoring-postmortem">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="macro-sector-daily-brief"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="macro-sector-daily-brief"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>宏观/板块观察与日报工作流</h3>
+        <strong class="selector-inline-price">¥99</strong>
+        <p class="selector-summary">把利率、就业、指数、板块轮动和政策新闻压成一份可持续更新的日报。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>宏观观察者、行业研究用户、投研类内容创作者</div>
+          <div class="selector-line"><strong>什么时候用</strong>想做宏观日报、板块观察、周度市场摘要或政策跟踪。</div>
+          <div class="selector-line"><strong>能得到什么</strong>宏观日报、板块观察表、重点事件摘要、周度 briefing。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Macro Briefing / 轻订阅</div>
+          <div class="warning selector-risk">非投资建议，不承诺收益。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="macro-sector-daily-brief">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="xhs-topic-to-post"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="xhs-topic-to-post"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>小红书选题到发布工作流</h3>
+        <strong class="selector-inline-price">¥299</strong>
+        <p class="selector-summary">把热点发现、选题、封面、图文和发布复盘串成一条完整的内容链。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>个人 IP、品牌运营、内容工作室</div>
+          <div class="selector-line"><strong>什么时候用</strong>要持续做小红书更新、跑账号矩阵、让选题和发布有节奏。</div>
+          <div class="selector-line"><strong>能得到什么</strong>选题池、封面、配图、图文稿、发布清单、复盘素材。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Content Ops / 主打包</div>
+          <div class="warning selector-risk">涉及账号权限或人工校验，更适合项目制交付。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="xhs-topic-to-post">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="wechat-topic-to-distribution"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="wechat-topic-to-distribution"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>公众号选题到排版分发工作流</h3>
+        <strong class="selector-inline-price">¥199</strong>
+        <p class="selector-summary">把选题池、文章草稿、排版和草稿箱分发做成稳定周更节奏。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>公众号团队、内容编辑、咨询或教育类内容机构</div>
+          <div class="selector-line"><strong>什么时候用</strong>准备运营公众号、需要固定周更、想把选题到草稿箱变成流程。</div>
+          <div class="selector-line"><strong>能得到什么</strong>选题池、文章草稿、封面建议、草稿箱待发内容、每周发布节奏表。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Content Ops / 分发包</div>
+          <div class="warning selector-risk">涉及账号权限或人工校验，更适合项目制交付。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="wechat-topic-to-distribution">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="design-assets-figma-writeback"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="design-assets-figma-writeback"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>设计资产生成与 Figma 回写工作流</h3>
+        <strong class="selector-inline-price">¥399</strong>
+        <p class="selector-summary">从视觉方向、素材生成到 Figma 回写，形成真正能交付给设计团队的资产链。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>设计师、设计工程师、产品经理、需要快速出视觉方案的小团队</div>
+          <div class="selector-line"><strong>什么时候用</strong>要做新页面视觉探索、设计评审、设计资产补全或网页回写。</div>
+          <div class="selector-line"><strong>能得到什么</strong>方向稿、设计上下文分析、Figma 回写结果、演示页面或汇报稿。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Design Pro / 服务型方案</div>
+          <div class="warning selector-risk">涉及账号权限或人工校验，更适合项目制交付。</div>
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="design-assets-figma-writeback">加入购物车</button>
+      </div>
+    </article>
+    
+    <article
+      class="workflow-card selector-card"
+      data-selector-card="true"
+      data-workflow-id="second-brain-knowledge-os"
+      data-segment="general"
+    >
+      <div class="selector-card-head">
+        <div class="workflow-top">
+          <span class="badge">通用</span>
+        </div>
+        <div class="selector-state" data-card-state="second-brain-knowledge-os"></div>
+      </div>
+      <div class="selector-card-main">
+        <h3>知识工作者第二大脑工作流</h3>
+        <strong class="selector-inline-price">¥199</strong>
+        <p class="selector-summary">把网页、PDF、会议记录和灵感沉淀成长期可复用的知识资产。</p>
+      </div>
+      <details class="selector-details">
+        <summary aria-label="查看详情" title="查看详情"></summary>
+        <div class="selector-details-body">
+          <div class="selector-line"><strong>适合谁</strong>咨询顾问、研究者、重度信息消费者、内容型创业者</div>
+          <div class="selector-line"><strong>什么时候用</strong>想搭个人知识系统、做周报、沉淀专题研究或长期素材库。</div>
+          <div class="selector-line"><strong>能得到什么</strong>阅读摘要、结构化卡片、知识库页面、周报或专题总结、写作素材库。</div>
+          <div class="selector-line"><strong>套餐位置</strong>Knowledge OS / 长期服务</div>
+          
+        </div>
+      </details>
+      <div class="selector-card-actions">
+        <div class="selector-price-note">固定定价</div>
+        <button type="button" class="cart-toggle" data-cart-toggle="second-brain-knowledge-os">加入购物车</button>
+      </div>
+    </article>
+    </div>
+              
+    <div class="cart-bar">
+      <button type="button" class="cart-bar-button" id="open-cart" disabled>
+        <div class="cart-bar-meta">
+          <strong id="cart-bar-title">购物车</strong>
+          <span id="cart-bar-subtitle">还没有选中工作流</span>
+        </div>
+        <strong class="cart-bar-total" id="cart-bar-total">¥0</strong>
+      </button>
+    </div>
+    
+              
+    <div class="selector-modal" id="cart-modal" aria-hidden="true">
+      <div class="selector-modal-panel">
+        <div class="selector-modal-head">
+          <div>
+            <h2>购物车</h2>
+            <p>先确认已选工作流，再点击结算生成小票。</p>
+          </div>
+          <button type="button" class="selector-close" data-close-cart="true" aria-label="关闭购物车">×</button>
+        </div>
+        <div id="cart-items" class="cart-modal-list">
+          <div id="cart-empty" class="cart-modal-empty">先添加几个工作流，这里会自动汇总你的选购内容。</div>
+        </div>
+        <div class="cart-modal-footer">
+          <div class="cart-modal-summary">
+            <span id="cart-count">已选 0 项</span>
+            <strong id="cart-total">¥0</strong>
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="clear-cart">清空购物车</button>
+            <button type="button" class="primary" id="cart-checkout" disabled>去结算</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+              
+    <div class="selector-modal" id="receipt-modal" aria-hidden="true">
+      <div class="selector-modal-panel">
+        <div class="selector-modal-head">
+          <div>
+            <h2>结算小票</h2>
+            <p>确认无误后可导出 PNG，用于沟通方案与报价。</p>
+          </div>
+          <button type="button" class="selector-close" data-close-receipt="true" aria-label="关闭小票">×</button>
+        </div>
+        <div class="receipt-actions">
+          <button type="button" id="receipt-back-to-cart">返回购物车</button>
+          <button type="button" class="primary" id="export-receipt" disabled>导出 PNG</button>
+        </div>
+        <div class="receipt-sheet" id="receipt-export">
+          <div class="receipt-paper">
+            <div class="receipt-head">
+              <strong class="receipt-store">OPENCLAW</strong>
+              <div>工作流模拟选购单</div>
+              <div class="receipt-kicker">已选工作流会自动汇总成一张可导出的小票图片</div>
+            </div>
+            <div class="receipt-meta">
+              <div class="receipt-meta-row"><span>订单号</span><strong id="receipt-order-id">OCW-0000</strong></div>
+              <div class="receipt-meta-row"><span>生成时间</span><span id="receipt-time">--</span></div>
+              <div class="receipt-meta-row"><span>已选数量</span><span id="receipt-count">0 项</span></div>
+            </div>
+            <div class="receipt-section-title">已选工作流</div>
+            <div id="receipt-items" class="receipt-items">
+              <div class="receipt-empty">先从购物车结算，这里才会显示小票。</div>
+            </div>
+            <div class="receipt-total">
+              <div class="receipt-total-row"><span>小计</span><span id="receipt-subtotal">¥0</span></div>
+              <div class="receipt-total-row"><span>总价</span><strong id="receipt-total">¥0</strong></div>
+            </div>
+            <details class="receipt-details" id="receipt-install-details">
+              <summary>能力清单</summary>
+              <div class="receipt-details-body">
+                <div id="receipt-install" class="receipt-install-list">
+                  <div class="receipt-small">结算后，可点击展开查看涉及能力名称。</div>
+                </div>
+              </div>
+            </details>
+            <div class="receipt-section-title">风险提示</div>
+            <div id="receipt-warnings" class="receipt-warning-list">
+              <div class="receipt-small">当前无额外风控提示。</div>
+            </div>
+            <div class="receipt-footer-note">
+              本页不涉及真实支付，导出的 PNG 仅用于选购确认与方案沟通。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+            </section>
+            
+    </div>
+  </main>
+  
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+      const selectorData = [{"workflow_id": "frontier-trend-radar", "name": "前沿趋势雷达", "segment": "academic", "package_position": "Academic Discovery / 入口款", "cart_price": 199, "cart_price_label": "¥199", "install_display_names": ["Agent Reach", "Academic Deep Research", "OpenAlex Database", "arXiv Database"], "install_count": 4, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "database-search-preprint-tracker", "name": "数据库检索与预印本跟踪", "segment": "academic", "package_position": "Academic Lite / 标准层", "cart_price": 199, "cart_price_label": "¥199", "install_display_names": ["OpenAlex Database", "PubMed Database", "arXiv Database", "Academic Literature Search"], "install_count": 4, "warning_label": "", "risk_level": "low"}, {"workflow_id": "systematic-review-evidence-table", "name": "系统综述筛选与证据表", "segment": "academic", "package_position": "Academic Review / 主成交层", "cart_price": 299, "cart_price_label": "¥299", "install_display_names": ["Literature Review", "ASReview Screening", "Systematic Review", "Spreadsheet"], "install_count": 4, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "zotero-library-pipeline", "name": "Zotero 建库与批量归档", "segment": "academic", "package_position": "Academic Ops / 高感知模块", "cart_price": 199, "cart_price_label": "¥199", "install_display_names": ["Pyzotero", "Citation Management", "Zotero Paper Coach"], "install_count": 3, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "paper-reading-annotation-coach", "name": "论文精读批注与导师式摘要", "segment": "academic", "package_position": "Academic Reading / 训练营型产品", "cart_price": 99, "cart_price_label": "¥99", "install_display_names": ["PDF", "Zotero Paper Coach", "Nano PDF", "Obsidian Official CLI"], "install_count": 4, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "academic-translation-terminology-lane", "name": "文献翻译与术语对照", "segment": "academic", "package_position": "Academic Reading / 专项刚需包", "cart_price": 99, "cart_price_label": "¥99", "install_display_names": ["Academic Translation Guide", "Zotero PDF Translate Guide", "Zotero PDF2ZH Guide", "PDF"], "install_count": 4, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "gap-contradiction-map", "name": "研究空白识别与争议点梳理", "segment": "academic", "package_position": "Academic Premium / 差异化层", "cart_price": 399, "cart_price_label": "¥399", "install_display_names": ["Gap Detection", "Contradiction Detection", "Evidence Grading", "Scholar Evaluation"], "install_count": 4, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "hypothesis-protocol-design", "name": "假设生成与实验/协议设计", "segment": "academic", "package_position": "Academic Premium / 咨询型产品", "cart_price": 499, "cart_price_label": "¥499", "install_display_names": ["Hypothesis Generation", "Experiment Design", "Protocols.io Integration"], "install_count": 3, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "lab-knowledge-base-os", "name": "实验记录与研究知识库", "segment": "academic", "package_position": "Academic Team / 订阅型方案", "cart_price": 399, "cart_price_label": "¥399", "install_display_names": ["Experiment Log", "Open Notebook", "Obsidian Official CLI", "Notion Research Documentation"], "install_count": 4, "warning_label": "", "risk_level": "high"}, {"workflow_id": "data-analysis-meta-lab", "name": "数据分析、统计与 Meta 分析", "segment": "academic", "package_position": "Academic Analytics / 方法服务", "cart_price": 299, "cart_price_label": "¥299", "install_display_names": ["Exploratory Data Analysis", "Jupyter Notebook", "Statistical Analysis", "Meta Analysis", "Spreadsheet"], "install_count": 5, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "manuscript-writing-revision", "name": "论文写作与改稿", "segment": "academic", "package_position": "Academic Pro / 主 SKU", "cart_price": 299, "cart_price_label": "¥299", "install_display_names": ["Scientific Writing", "Peer Review", "Citation Management"], "install_count": 3, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "grant-submission-defense-suite", "name": "基金申请、投稿质检与答辩展示", "segment": "academic", "package_position": "Academic Submission / 冲刺包", "cart_price": 499, "cart_price_label": "¥499", "install_display_names": ["Research Grants", "Grant Writing", "Reproducibility Check", "Scientific Slides", "Presentation Deck", "Venue Templates"], "install_count": 6, "warning_label": "", "risk_level": "medium"}, {"workflow_id": "indie-launch-factory", "name": "独立开发者从代码到发布", "segment": "general", "package_position": "Developer Launch / 标准包", "cart_price": 299, "cart_price_label": "¥299", "install_display_names": ["GitHub", "Coding Agent", "Agent Browser", "Figma MCP OpenClaw", "Figma Writeback Codex", "Imagegen", "Frontend Slides"], "install_count": 7, "warning_label": "", "risk_level": "high"}, {"workflow_id": "industry-competitive-intel", "name": "行业/竞品情报跟踪", "segment": "general", "package_position": "Intel Tracker / 订阅包", "cart_price": 199, "cart_price_label": "¥199", "install_display_names": ["Agent Reach", "Agent Browser", "GitHub", "Spreadsheet"], "install_count": 4, "warning_label": "", "risk_level": "high"}, {"workflow_id": "stock-monitoring-postmortem", "name": "股票监控与事件复盘", "segment": "general", "package_position": "Investor Signals / 复盘包", "cart_price": 99, "cart_price_label": "¥99", "install_display_names": ["Agent Reach", "Alpha Vantage", "Qveris Finance", "Spreadsheet", "Jupyter Notebook"], "install_count": 5, "warning_label": "非投资建议，不承诺收益，不做自动交易。", "risk_level": "high"}, {"workflow_id": "macro-sector-daily-brief", "name": "宏观/板块观察与日报", "segment": "general", "package_position": "Macro Briefing / 轻订阅", "cart_price": 99, "cart_price_label": "¥99", "install_display_names": ["Agent Reach", "FRED Economic Data", "Alpha Vantage", "Finance Daily Report", "Spreadsheet"], "install_count": 5, "warning_label": "非投资建议，不承诺收益。", "risk_level": "medium"}, {"workflow_id": "xhs-topic-to-post", "name": "小红书选题到发布", "segment": "general", "package_position": "Content Ops / 主打包", "cart_price": 299, "cart_price_label": "¥299", "install_display_names": ["Agent Reach", "Wechat Topic Selector", "XHS Bauhaus Poster", "Imagegen", "XHS Diary Workflow"], "install_count": 5, "warning_label": "", "risk_level": "high"}, {"workflow_id": "wechat-topic-to-distribution", "name": "公众号选题到排版分发", "segment": "general", "package_position": "Content Ops / 分发包", "cart_price": 199, "cart_price_label": "¥199", "install_display_names": ["Agent Reach", "Wechat Topic Selector", "Imagegen", "Wechat Publisher"], "install_count": 4, "warning_label": "", "risk_level": "high"}, {"workflow_id": "design-assets-figma-writeback", "name": "设计资产生成与 Figma 回写", "segment": "general", "package_position": "Design Pro / 服务型方案", "cart_price": 399, "cart_price_label": "¥399", "install_display_names": ["Imagegen", "Figma MCP OpenClaw", "Figma Writeback Codex", "Frontend Slides"], "install_count": 4, "warning_label": "", "risk_level": "high"}, {"workflow_id": "second-brain-knowledge-os", "name": "知识工作者第二大脑", "segment": "general", "package_position": "Knowledge OS / 长期服务", "cart_price": 199, "cart_price_label": "¥199", "install_display_names": ["Agent Reach", "PDF", "Obsidian Official CLI", "Notion Research Documentation", "Scientific Writing"], "install_count": 5, "warning_label": "", "risk_level": "medium"}];
+      const selectorMap = new Map(selectorData.map((item) => [item.workflow_id, item]));
+      const state = {
+        selectedIds: [],
+        activeFilter: 'all',
+        orderId: '',
+      };
+
+      const filterButtons = document.querySelectorAll('[data-selector-filter]');
+      const selectorCards = document.querySelectorAll('[data-selector-card]');
+      const cartButtons = document.querySelectorAll('[data-cart-toggle]');
+      const openCartButton = document.getElementById('open-cart');
+      const cartBarTitle = document.getElementById('cart-bar-title');
+      const cartBarSubtitle = document.getElementById('cart-bar-subtitle');
+      const cartBarTotal = document.getElementById('cart-bar-total');
+
+      const cartModal = document.getElementById('cart-modal');
+      const closeCartButtons = document.querySelectorAll('[data-close-cart]');
+      const cartItems = document.getElementById('cart-items');
+      const cartCount = document.getElementById('cart-count');
+      const cartTotal = document.getElementById('cart-total');
+      const cartCheckoutButton = document.getElementById('cart-checkout');
+      const clearCartButton = document.getElementById('clear-cart');
+
+      const receiptModal = document.getElementById('receipt-modal');
+      const closeReceiptButtons = document.querySelectorAll('[data-close-receipt]');
+      const receiptBackToCart = document.getElementById('receipt-back-to-cart');
+      const exportButton = document.getElementById('export-receipt');
+
+      const receiptItems = document.getElementById('receipt-items');
+      const receiptInstall = document.getElementById('receipt-install');
+      const receiptInstallDetails = document.getElementById('receipt-install-details');
+      const receiptWarnings = document.getElementById('receipt-warnings');
+      const receiptOrderId = document.getElementById('receipt-order-id');
+      const receiptTime = document.getElementById('receipt-time');
+      const receiptCount = document.getElementById('receipt-count');
+      const receiptSubtotal = document.getElementById('receipt-subtotal');
+      const receiptTotal = document.getElementById('receipt-total');
+
+      function formatMoney(value) {
+        return `¥${value}`;
+      }
+
+      function nowStamp() {
+        return new Intl.DateTimeFormat('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }).format(new Date());
+      }
+
+      function buildOrderId() {
+        const date = new Date();
+        const parts = [
+          date.getFullYear(),
+          String(date.getMonth() + 1).padStart(2, '0'),
+          String(date.getDate()).padStart(2, '0'),
+        ];
+        const suffix = String(Math.floor(Math.random() * 9000) + 1000);
+        return `OCW-${parts.join('')}-${suffix}`;
+      }
+
+      function getSelectedWorkflows() {
+        return state.selectedIds.map((workflowId) => selectorMap.get(workflowId)).filter(Boolean);
+      }
+
+      function getCartTotal() {
+        return getSelectedWorkflows().reduce((sum, item) => sum + item.cart_price, 0);
+      }
+
+      function setModalOpen(modal, open) {
+        if (!modal) return;
+        modal.classList.toggle('is-visible', open);
+        modal.setAttribute('aria-hidden', open ? 'false' : 'true');
+        const anyOpen = document.querySelector('.selector-modal.is-visible');
+        document.body.classList.toggle('selector-modal-open', !!anyOpen);
+      }
+
+      function openCartModal() {
+        if (!state.selectedIds.length) return;
+        setModalOpen(receiptModal, false);
+        setModalOpen(cartModal, true);
+      }
+
+      function closeCartModal() {
+        setModalOpen(cartModal, false);
+      }
+
+      function openReceiptModal() {
+        if (!state.selectedIds.length) return;
+        state.orderId = buildOrderId();
+        renderReceipt();
+        setModalOpen(cartModal, false);
+        setModalOpen(receiptModal, true);
+      }
+
+      function closeReceiptModal() {
+        setModalOpen(receiptModal, false);
+      }
+
+      function exportReceiptImage() {
+        if (!window.html2canvas || !state.selectedIds.length) return;
+        exportButton.disabled = true;
+        exportButton.textContent = '导出中...';
+
+        return window.html2canvas(document.getElementById('receipt-export'), {
+          backgroundColor: '#fffaf2',
+          scale: 2,
+          useCORS: true,
+        })
+          .then((canvas) => {
+            const link = document.createElement('a');
+            const stamp = new Date();
+            const filename = `openclaw-workflow-receipt-${
+              stamp.getFullYear()
+            }${String(stamp.getMonth() + 1).padStart(2, '0')}${String(stamp.getDate()).padStart(
+              2,
+              '0'
+            )}-${String(stamp.getHours()).padStart(2, '0')}${String(
+              stamp.getMinutes()
+            ).padStart(2, '0')}${String(stamp.getSeconds()).padStart(2, '0')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.download = filename;
+            link.click();
+          })
+          .catch((error) => {
+            window.alert(`导出失败：${error.message}`);
+          })
+          .finally(() => {
+            exportButton.disabled = !state.selectedIds.length;
+            exportButton.textContent = '导出 PNG';
+          });
+      }
+
+      function dedupe(values) {
+        const seen = new Set();
+        const deduped = [];
+        values.forEach((value) => {
+          if (!value || seen.has(value)) return;
+          seen.add(value);
+          deduped.push(value);
+        });
+        return deduped;
+      }
+
+      function animateAddToCart(sourceButton) {
+        if (!sourceButton || !openCartButton) return;
+        const source = sourceButton.getBoundingClientRect();
+        const target = openCartButton.getBoundingClientRect();
+        const chip = document.createElement('div');
+        chip.className = 'cart-fly-chip';
+        chip.textContent = '已加入';
+        chip.style.left = `${source.left + source.width / 2}px`;
+        chip.style.top = `${source.top + source.height / 2}px`;
+        document.body.appendChild(chip);
+
+        const dx = target.left + target.width / 2 - (source.left + source.width / 2);
+        const dy = target.top + target.height / 2 - (source.top + source.height / 2);
+        const animation = chip.animate(
+          [
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+            { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.3)`, opacity: 0.12 },
+          ],
+          { duration: 640, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+        );
+        animation.onfinish = () => chip.remove();
+
+        openCartButton.classList.remove('cart-bar-bump');
+        void openCartButton.offsetWidth;
+        openCartButton.classList.add('cart-bar-bump');
+      }
+
+      function toggleWorkflow(workflowId, sourceButton = null) {
+        const existingIndex = state.selectedIds.indexOf(workflowId);
+        if (existingIndex >= 0) {
+          state.selectedIds.splice(existingIndex, 1);
+        } else {
+          state.selectedIds.push(workflowId);
+          animateAddToCart(sourceButton);
+        }
+        render();
+      }
+
+      function applyFilter() {
+        selectorCards.forEach((card) => {
+          const workflowId = card.dataset.workflowId;
+          const isSelected = state.selectedIds.includes(workflowId);
+          const matches =
+            state.activeFilter === 'all' ||
+            (state.activeFilter === 'selected' && isSelected) ||
+            card.dataset.segment === state.activeFilter;
+          card.classList.toggle('hidden', !matches);
+        });
+      }
+
+      function renderCardStates() {
+        selectorCards.forEach((card) => {
+          const workflowId = card.dataset.workflowId;
+          const isSelected = state.selectedIds.includes(workflowId);
+          card.classList.toggle('is-selected', isSelected);
+
+          const button = card.querySelector('[data-cart-toggle]');
+          if (button) {
+            button.textContent = isSelected ? '移出购物车' : '加入购物车';
+            button.classList.toggle('is-selected', isSelected);
+          }
+
+          const stateNode = card.querySelector(`[data-card-state="${workflowId}"]`);
+          if (stateNode) {
+            stateNode.innerHTML = isSelected
+              ? '<span class="selector-state-dot"></span><span>已在购物车</span>'
+              : '';
+          }
+        });
+      }
+
+      function renderCartBar() {
+        const selectedWorkflows = getSelectedWorkflows();
+        const total = getCartTotal();
+
+        cartBarTitle.textContent = selectedWorkflows.length
+          ? `购物车 · ${selectedWorkflows.length} 项`
+          : '购物车';
+        cartBarSubtitle.textContent = selectedWorkflows.length
+          ? '点击查看并结算'
+          : '先挑选工作流再结算';
+        cartBarTotal.textContent = formatMoney(total);
+        openCartButton.disabled = !selectedWorkflows.length;
+      }
+
+      function renderCartModal() {
+        const selectedWorkflows = getSelectedWorkflows();
+        const total = getCartTotal();
+
+        cartCount.textContent = `已选 ${selectedWorkflows.length} 项`;
+        cartTotal.textContent = formatMoney(total);
+
+        if (!selectedWorkflows.length) {
+          cartItems.innerHTML =
+            '<div id="cart-empty" class="cart-modal-empty">先添加几个工作流，这里会自动汇总你的选购内容。</div>';
+          cartCheckoutButton.disabled = true;
+          clearCartButton.disabled = true;
+          return;
+        }
+
+        cartItems.innerHTML = selectedWorkflows
+          .map(
+            (item) => `
+              <div class="cart-modal-item">
+                <div class="cart-modal-item-main">
+                  <strong>${item.name}工作流</strong>
+                  <span>${item.segment === 'academic' ? '学术' : '通用'} · ${item.package_position}</span>
+                </div>
+                <div class="cart-modal-item-side">
+                  <strong>${item.cart_price_label}</strong>
+                  <button type="button" class="cart-remove" data-remove-workflow="${item.workflow_id}">移除</button>
+                </div>
+              </div>
+            `
+          )
+          .join('');
+
+        cartCheckoutButton.disabled = false;
+        clearCartButton.disabled = false;
+      }
+
+      function renderReceipt() {
+        const selectedWorkflows = getSelectedWorkflows();
+        const total = getCartTotal();
+        const installNames = dedupe(
+          selectedWorkflows.flatMap((item) => item.install_display_names || [])
+        );
+        const warnings = dedupe(
+          selectedWorkflows.map((item) => item.warning_label).filter(Boolean)
+        );
+
+        receiptOrderId.textContent = state.orderId;
+        receiptTime.textContent = nowStamp();
+        receiptCount.textContent = `${selectedWorkflows.length} 项`;
+        receiptSubtotal.textContent = formatMoney(total);
+        receiptTotal.textContent = formatMoney(total);
+
+        if (!selectedWorkflows.length) {
+          receiptItems.innerHTML =
+            '<div class="receipt-empty">先从购物车结算，这里才会显示小票。</div>';
+          receiptInstall.innerHTML =
+            '<div class="receipt-small">结算后，可点击展开查看涉及能力名称。</div>';
+          if (receiptInstallDetails) {
+            receiptInstallDetails.open = false;
+          }
+          receiptWarnings.innerHTML =
+            '<div class="receipt-small">当前无额外风控提示。</div>';
+          exportButton.disabled = true;
+          return;
+        }
+
+        receiptItems.innerHTML = selectedWorkflows
+          .map(
+            (item) => `
+              <div class="receipt-item">
+                <div class="receipt-item-row">
+                  <span class="receipt-item-name">${item.name}工作流</span>
+                  <strong>${item.cart_price_label}</strong>
+                </div>
+                <div class="receipt-item-note">${item.segment === 'academic' ? '学术工作流' : '通用工作流'} · ${item.package_position}</div>
+              </div>
+            `
+          )
+          .join('');
+
+        receiptInstall.innerHTML = `
+          ${installNames
+            .map((name) => `<div class="receipt-install-name">${name}</div>`)
+            .join('')}
+        `;
+
+        receiptWarnings.innerHTML = warnings.length
+          ? warnings
+              .map((warning) => `<div class="receipt-warning-note">${warning}</div>`)
+              .join('')
+          : '<div class="receipt-small">当前组合无额外合规提示。</div>';
+
+        exportButton.disabled = false;
+      }
+
+      function render() {
+        filterButtons.forEach((button) => {
+          button.classList.toggle('active', button.dataset.selectorFilter === state.activeFilter);
+        });
+        applyFilter();
+        renderCardStates();
+        renderCartBar();
+        renderCartModal();
+        renderReceipt();
+      }
+
+      filterButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          state.activeFilter = button.dataset.selectorFilter || 'all';
+          render();
+        });
+      });
+
+      cartButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          toggleWorkflow(button.dataset.cartToggle, button);
+        });
+      });
+
+      if (openCartButton) {
+        openCartButton.addEventListener('click', openCartModal);
+      }
+
+      closeCartButtons.forEach((button) => {
+        button.addEventListener('click', closeCartModal);
+      });
+
+      closeReceiptButtons.forEach((button) => {
+        button.addEventListener('click', closeReceiptModal);
+      });
+
+      if (cartModal) {
+        cartModal.addEventListener('click', (event) => {
+          if (event.target === cartModal) closeCartModal();
+        });
+      }
+
+      if (receiptModal) {
+        receiptModal.addEventListener('click', (event) => {
+          if (event.target === receiptModal) closeReceiptModal();
+        });
+      }
+
+      if (cartItems) {
+        cartItems.addEventListener('click', (event) => {
+          const target = event.target.closest('[data-remove-workflow]');
+          if (!target) return;
+          toggleWorkflow(target.dataset.removeWorkflow);
+        });
+      }
+
+      if (clearCartButton) {
+        clearCartButton.addEventListener('click', () => {
+          state.selectedIds = [];
+          render();
+        });
+      }
+
+      if (cartCheckoutButton) {
+        cartCheckoutButton.addEventListener('click', openReceiptModal);
+      }
+
+      if (receiptBackToCart) {
+        receiptBackToCart.addEventListener('click', () => {
+          closeReceiptModal();
+          openCartModal();
+        });
+      }
+
+      if (exportButton) {
+        exportButton.addEventListener('click', () => {
+          exportReceiptImage();
+        });
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          if (receiptModal?.classList.contains('is-visible')) {
+            closeReceiptModal();
+            return;
+          }
+          if (cartModal?.classList.contains('is-visible')) {
+            closeCartModal();
+          }
+        }
+      });
+
+      if (openCartButton) {
+        openCartButton.addEventListener('animationend', () => {
+          openCartButton.classList.remove('cart-bar-bump');
+        });
+      }
+
+      render();
+    </script>
+    
+</body>
+</html>
