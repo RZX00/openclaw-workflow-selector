@@ -2419,6 +2419,33 @@
         link.click();
       }
 
+      function normalizeReceiptDetailsForExport(clonedDocument) {
+        const clonedInstallDetails = clonedDocument.getElementById('receipt-install-details');
+        if (!clonedInstallDetails) return;
+
+        const summary = clonedInstallDetails.querySelector('summary');
+        const body = clonedInstallDetails.querySelector('.receipt-details-body');
+        const wasOpen = !!receiptInstallDetails?.open;
+
+        const staticBlock = clonedDocument.createElement('div');
+        staticBlock.className = 'receipt-details receipt-details-export-static';
+
+        if (summary) {
+          const staticTitle = clonedDocument.createElement('div');
+          staticTitle.className = 'receipt-section-title';
+          staticTitle.textContent = (summary.textContent || '').trim() || '能力清单';
+          staticBlock.appendChild(staticTitle);
+        }
+
+        if (body && wasOpen) {
+          const staticBody = body.cloneNode(true);
+          staticBody.classList.add('receipt-details-body-static');
+          staticBlock.appendChild(staticBody);
+        }
+
+        clonedInstallDetails.replaceWith(staticBlock);
+      }
+
       function exportReceiptImage() {
         if (!window.html2canvas || !state.selectedIds.length) return;
         exportButton.disabled = true;
@@ -2428,6 +2455,9 @@
           backgroundColor: '#fffaf2',
           scale: 2,
           useCORS: true,
+          onclone: (clonedDocument) => {
+            normalizeReceiptDetailsForExport(clonedDocument);
+          },
         })
           .then((canvas) => {
             state.previewImageUrl = canvas.toDataURL('image/png');
