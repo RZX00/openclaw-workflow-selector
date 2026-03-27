@@ -1243,7 +1243,7 @@
             placeholder="搜索你的需求、场景或关键词，比如：开题、研究地图、Zotero、翻译、复盘、小红书"
           />
         </label>
-        <div class="selector-search-hint">会匹配这张卡片里的全部文案，包括名称、适合谁、使用场景、产出、套餐位置和风险提示。</div>
+        <div class="selector-search-hint">会匹配这张卡片里的全部文案，包括名称、适合谁、使用场景、产出和风险提示。</div>
       </div>
       <div class="filter-row selector-filter-row">
         <button type="button" class="active" data-selector-filter="all">全部</button>
@@ -1972,8 +1972,7 @@
         <div class="receipt-paper">
           <div class="receipt-head">
             <strong class="receipt-store">OPENCLAW</strong>
-            <div>工作流模拟选购单</div>
-            <div class="receipt-kicker">已选工作流会自动汇总成一张可导出的小票图片</div>
+            <div>工作流选购单</div>
           </div>
           <div class="receipt-meta">
             <div class="receipt-meta-row"><span>订单号</span><strong id="receipt-order-id">OCW-0000</strong></div>
@@ -2055,6 +2054,9 @@
         const price = card.querySelector('.selector-inline-price');
         const actions = card.querySelector('.selector-card-actions');
         const button = actions?.querySelector('[data-cart-toggle]');
+        const packageLine = Array.from(card.querySelectorAll('.selector-line')).find((line) =>
+          (line.querySelector('strong')?.textContent || '').includes('套餐位置')
+        );
 
         if (!main || !price || !button) return;
 
@@ -2070,6 +2072,7 @@
         }
 
         actions?.remove();
+        packageLine?.remove();
       });
 
       const searchInput = document.getElementById('selector-search-input');
@@ -2153,7 +2156,6 @@
           card.textContent || '',
           item.name || '',
           item.segment || '',
-          item.package_position || '',
           item.warning_label || '',
           item.search_aliases || '',
           (item.install_display_names || []).join(' '),
@@ -2350,14 +2352,14 @@
         cartItems.innerHTML = selectedWorkflows
           .map(
             (item) => `
-              <div class="cart-modal-item">
-                <div class="cart-modal-item-main">
-                  <strong>${item.name}工作流</strong>
-                  <span>${item.segment === 'academic' ? '学术' : '通用'} · ${item.package_position}</span>
-                </div>
-                <div class="cart-modal-item-side">
-                  <strong>${item.cart_price_label}</strong>
-                  <button type="button" class="cart-remove" data-remove-workflow="${item.workflow_id}">移除</button>
+                <div class="cart-modal-item">
+                  <div class="cart-modal-item-main">
+                    <strong>${item.name}工作流</strong>
+                    <span>${item.segment === 'academic' ? '学术工作流' : '通用工作流'}</span>
+                  </div>
+                  <div class="cart-modal-item-side">
+                    <strong>${item.cart_price_label}</strong>
+                    <button type="button" class="cart-remove" data-remove-workflow="${item.workflow_id}">移除</button>
                 </div>
               </div>
             `
@@ -2406,7 +2408,7 @@
                   <span class="receipt-item-name">${item.name}工作流</span>
                   <strong>${item.cart_price_label}</strong>
                 </div>
-                <div class="receipt-item-note">${item.segment === 'academic' ? '学术工作流' : '通用工作流'} · ${item.package_position}</div>
+                <div class="receipt-item-note">${item.segment === 'academic' ? '学术工作流' : '通用工作流'}</div>
               </div>
             `
           )
