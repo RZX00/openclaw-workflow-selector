@@ -596,18 +596,23 @@
     }
     .cart-bar {
       position: fixed;
-      left: 50%;
-      bottom: max(12px, calc(env(safe-area-inset-bottom) + 10px));
-      z-index: 30;
-      width: min(680px, calc(100vw - 28px));
-      transform: translateX(-50%);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9990;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+      pointer-events: none;
     }
     .cart-bar-button {
-      width: 100%;
+      width: min(720px, calc(100vw - 24px));
       appearance: none;
       border: 0;
-      border-radius: 999px;
-      padding: 14px 18px;
+      border-radius: 22px 22px 0 0;
+      padding: 14px 18px calc(14px + env(safe-area-inset-bottom));
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -618,6 +623,7 @@
       font: inherit;
       cursor: pointer;
       backdrop-filter: blur(18px);
+      pointer-events: auto;
     }
     .cart-bar-button:disabled {
       opacity: 0.92;
@@ -661,23 +667,27 @@
     .selector-modal {
       position: fixed;
       inset: 0;
-      z-index: 40;
+      z-index: 10000;
       display: none;
       background: rgba(17, 24, 39, 0.42);
       backdrop-filter: blur(10px);
       align-items: end;
-      justify-content: center;
-      padding: 0 14px 0;
+      justify-content: stretch;
+      padding: 0;
     }
     .selector-modal.is-visible {
       display: flex;
     }
     .selector-modal-panel {
-      width: min(760px, calc(100vw - 28px));
-      max-height: calc(100vh - 8px);
-      max-height: calc(100dvh - 8px);
+      width: 100vw;
+      max-width: 100vw;
+      max-height: 100vh;
+      max-height: 100dvh;
       overflow: auto;
-      padding: 20px;
+      padding-top: 20px;
+      padding-right: max(18px, env(safe-area-inset-right));
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      padding-left: max(18px, env(safe-area-inset-left));
       border-radius: 28px 28px 0 0;
       background: rgba(255, 255, 255, 0.94);
       box-shadow: var(--shadow);
@@ -834,6 +844,8 @@
     .receipt-sheet {
       position: relative;
       overflow: hidden;
+      width: min(520px, 100%);
+      margin: 0 auto;
       padding: 0;
       border-radius: 0;
       background: transparent;
@@ -1063,11 +1075,13 @@
         padding-top: 10px;
       }
       .cart-bar {
-        width: calc(100vw - 20px);
-        bottom: max(10px, calc(env(safe-area-inset-bottom) + 6px));
+        padding-left: max(8px, env(safe-area-inset-left));
+        padding-right: max(8px, env(safe-area-inset-right));
       }
       .cart-bar-button {
-        padding: 12px 14px;
+        width: calc(100vw - 16px);
+        border-radius: 18px 18px 0 0;
+        padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
         gap: 12px;
       }
       .cart-bar-meta strong {
@@ -1081,10 +1095,13 @@
       }
       .selector-modal-panel {
         width: 100vw;
-        max-height: calc(100vh - 2px);
-        max-height: calc(100dvh - 2px);
+        max-height: 100vh;
+        max-height: 100dvh;
         border-radius: 24px 24px 0 0;
-        padding: 18px;
+        padding-top: 18px;
+        padding-right: max(14px, env(safe-area-inset-right));
+        padding-bottom: calc(18px + env(safe-area-inset-bottom));
+        padding-left: max(14px, env(safe-area-inset-left));
       }
       .selector-modal-head {
         margin-bottom: 14px;
@@ -1107,6 +1124,7 @@
         min-height: 46px;
       }
       .receipt-sheet {
+        width: min(100%, 420px);
         border-radius: 24px;
       }
     }
@@ -1795,101 +1813,98 @@
       </div>
     </article>
     </div>
-              
-    <div class="cart-bar">
-      <button type="button" class="cart-bar-button" id="open-cart" disabled>
-        <div class="cart-bar-meta">
-          <strong id="cart-bar-title">购物车</strong>
-          <span id="cart-bar-subtitle">还没有选中工作流</span>
-        </div>
-        <strong class="cart-bar-total" id="cart-bar-total">¥0</strong>
-      </button>
-    </div>
-    
-              
-    <div class="selector-modal" id="cart-modal" aria-hidden="true">
-      <div class="selector-modal-panel">
-        <div class="selector-modal-head">
-          <div>
-            <h2>购物车</h2>
-            <p>先确认已选工作流，再点击结算生成小票。</p>
-          </div>
-          <button type="button" class="selector-close" data-close-cart="true" aria-label="关闭购物车">×</button>
-        </div>
-        <div id="cart-items" class="cart-modal-list">
-          <div id="cart-empty" class="cart-modal-empty">先添加几个工作流，这里会自动汇总你的选购内容。</div>
-        </div>
-        <div class="cart-modal-footer">
-          <div class="cart-modal-summary">
-            <span id="cart-count">已选 0 项</span>
-            <strong id="cart-total">¥0</strong>
-          </div>
-          <div class="modal-actions">
-            <button type="button" id="clear-cart">清空购物车</button>
-            <button type="button" class="primary" id="cart-checkout" disabled>去结算</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-              
-    <div class="selector-modal" id="receipt-modal" aria-hidden="true">
-      <div class="selector-modal-panel">
-        <div class="selector-modal-head">
-          <div>
-            <h2>结算小票</h2>
-            <p>确认无误后可导出 PNG，用于沟通方案与报价。</p>
-          </div>
-          <button type="button" class="selector-close" data-close-receipt="true" aria-label="关闭小票">×</button>
-        </div>
-        <div class="receipt-actions">
-          <button type="button" id="receipt-back-to-cart">返回购物车</button>
-          <button type="button" class="primary" id="export-receipt" disabled>导出 PNG</button>
-        </div>
-        <div class="receipt-sheet" id="receipt-export">
-          <div class="receipt-paper">
-            <div class="receipt-head">
-              <strong class="receipt-store">OPENCLAW</strong>
-              <div>工作流模拟选购单</div>
-              <div class="receipt-kicker">已选工作流会自动汇总成一张可导出的小票图片</div>
-            </div>
-            <div class="receipt-meta">
-              <div class="receipt-meta-row"><span>订单号</span><strong id="receipt-order-id">OCW-0000</strong></div>
-              <div class="receipt-meta-row"><span>生成时间</span><span id="receipt-time">--</span></div>
-              <div class="receipt-meta-row"><span>已选数量</span><span id="receipt-count">0 项</span></div>
-            </div>
-            <div class="receipt-section-title">已选工作流</div>
-            <div id="receipt-items" class="receipt-items">
-              <div class="receipt-empty">先从购物车结算，这里才会显示小票。</div>
-            </div>
-            <div class="receipt-total">
-              <div class="receipt-total-row"><span>小计</span><span id="receipt-subtotal">¥0</span></div>
-              <div class="receipt-total-row"><span>总价</span><strong id="receipt-total">¥0</strong></div>
-            </div>
-            <details class="receipt-details" id="receipt-install-details">
-              <summary>能力清单</summary>
-              <div class="receipt-details-body">
-                <div id="receipt-install" class="receipt-install-list">
-                  <div class="receipt-small">结算后，可点击展开查看涉及能力名称。</div>
-                </div>
-              </div>
-            </details>
-            <div class="receipt-section-title">风险提示</div>
-            <div id="receipt-warnings" class="receipt-warning-list">
-              <div class="receipt-small">当前无额外风控提示。</div>
-            </div>
-            <div class="receipt-footer-note">
-              本页不涉及真实支付，导出的 PNG 仅用于选购确认与方案沟通。
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
             </section>
             
     </div>
   </main>
+
+  <div class="cart-bar">
+    <button type="button" class="cart-bar-button" id="open-cart" disabled>
+      <div class="cart-bar-meta">
+        <strong id="cart-bar-title">购物车</strong>
+        <span id="cart-bar-subtitle">还没有选中工作流</span>
+      </div>
+      <strong class="cart-bar-total" id="cart-bar-total">¥0</strong>
+    </button>
+  </div>
+
+  <div class="selector-modal" id="cart-modal" aria-hidden="true">
+    <div class="selector-modal-panel">
+      <div class="selector-modal-head">
+        <div>
+          <h2>购物车</h2>
+          <p>先确认已选工作流，再点击结算生成小票。</p>
+        </div>
+        <button type="button" class="selector-close" data-close-cart="true" aria-label="关闭购物车">×</button>
+      </div>
+      <div id="cart-items" class="cart-modal-list">
+        <div id="cart-empty" class="cart-modal-empty">先添加几个工作流，这里会自动汇总你的选购内容。</div>
+      </div>
+      <div class="cart-modal-footer">
+        <div class="cart-modal-summary">
+          <span id="cart-count">已选 0 项</span>
+          <strong id="cart-total">¥0</strong>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="clear-cart">清空购物车</button>
+          <button type="button" class="primary" id="cart-checkout" disabled>去结算</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="selector-modal" id="receipt-modal" aria-hidden="true">
+    <div class="selector-modal-panel">
+      <div class="selector-modal-head">
+        <div>
+          <h2>结算小票</h2>
+          <p>确认无误后可导出 PNG，用于沟通方案与报价。</p>
+        </div>
+        <button type="button" class="selector-close" data-close-receipt="true" aria-label="关闭小票">×</button>
+      </div>
+      <div class="receipt-actions">
+        <button type="button" id="receipt-back-to-cart">返回购物车</button>
+        <button type="button" class="primary" id="export-receipt" disabled>导出 PNG</button>
+      </div>
+      <div class="receipt-sheet" id="receipt-export">
+        <div class="receipt-paper">
+          <div class="receipt-head">
+            <strong class="receipt-store">OPENCLAW</strong>
+            <div>工作流模拟选购单</div>
+            <div class="receipt-kicker">已选工作流会自动汇总成一张可导出的小票图片</div>
+          </div>
+          <div class="receipt-meta">
+            <div class="receipt-meta-row"><span>订单号</span><strong id="receipt-order-id">OCW-0000</strong></div>
+            <div class="receipt-meta-row"><span>生成时间</span><span id="receipt-time">--</span></div>
+            <div class="receipt-meta-row"><span>已选数量</span><span id="receipt-count">0 项</span></div>
+          </div>
+          <div class="receipt-section-title">已选工作流</div>
+          <div id="receipt-items" class="receipt-items">
+            <div class="receipt-empty">先从购物车结算，这里才会显示小票。</div>
+          </div>
+          <div class="receipt-total">
+            <div class="receipt-total-row"><span>小计</span><span id="receipt-subtotal">¥0</span></div>
+            <div class="receipt-total-row"><span>总价</span><strong id="receipt-total">¥0</strong></div>
+          </div>
+          <details class="receipt-details" id="receipt-install-details">
+            <summary>能力清单</summary>
+            <div class="receipt-details-body">
+              <div id="receipt-install" class="receipt-install-list">
+                <div class="receipt-small">结算后，可点击展开查看涉及能力名称。</div>
+              </div>
+            </div>
+          </details>
+          <div class="receipt-section-title">风险提示</div>
+          <div id="receipt-warnings" class="receipt-warning-list">
+            <div class="receipt-small">当前无额外风控提示。</div>
+          </div>
+          <div class="receipt-footer-note">
+            本页不涉及真实支付，导出的 PNG 仅用于选购确认与方案沟通。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
