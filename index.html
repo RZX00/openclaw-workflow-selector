@@ -413,6 +413,62 @@
       gap: 12px;
       margin-bottom: 16px;
     }
+    .selector-search-row {
+      display: grid;
+      gap: 10px;
+    }
+    .selector-search {
+      position: relative;
+      display: grid;
+      align-items: center;
+    }
+    .selector-search input {
+      width: 100%;
+      appearance: none;
+      border: 1px solid rgba(18, 38, 63, 0.12);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+      padding: 13px 48px 13px 16px;
+      outline: none;
+      transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+    .selector-search input:focus {
+      border-color: rgba(47, 109, 179, 0.34);
+      box-shadow: 0 0 0 4px rgba(47, 109, 179, 0.08);
+      background: rgba(255, 255, 255, 0.94);
+    }
+    .selector-search::after {
+      content: "";
+      position: absolute;
+      right: 18px;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(18, 38, 63, 0.45);
+      border-radius: 999px;
+      pointer-events: none;
+    }
+    .selector-search::before {
+      content: "";
+      position: absolute;
+      right: 14px;
+      top: calc(50% + 6px);
+      width: 8px;
+      height: 2px;
+      background: rgba(18, 38, 63, 0.45);
+      transform: rotate(45deg);
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .selector-search-hint {
+      color: var(--ink-soft);
+      font-size: 12px;
+      line-height: 1.6;
+      padding: 0 2px;
+    }
     .selector-toolbar .eyebrow {
       color: var(--ink-soft);
     }
@@ -443,6 +499,15 @@
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
+    }
+    .selector-empty {
+      margin-top: 12px;
+      padding: 18px 0;
+      border-top: 1px dashed rgba(18, 38, 63, 0.16);
+      border-bottom: 1px dashed rgba(18, 38, 63, 0.16);
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.7;
     }
     .selector-card {
       min-height: 100%;
@@ -475,6 +540,12 @@
       gap: 8px;
       padding-right: 44px;
     }
+    .selector-purchase-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
     .selector-inline-price {
       font-family: var(--display);
       font-size: 36px;
@@ -486,25 +557,10 @@
       font-size: 14px;
       line-height: 1.6;
     }
-    .selector-card-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(18, 38, 63, 0.08);
-      margin-top: auto;
-    }
-    .selector-price-note {
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-    }
     .selector-details {
       position: static;
       border-top: 0;
-      padding-top: 0;
+      padding-top: 2px;
     }
     .selector-details summary {
       list-style: none;
@@ -581,7 +637,7 @@
       appearance: none;
       border: 0;
       border-radius: 999px;
-      padding: 12px 16px;
+      padding: 11px 15px;
       background: var(--navy);
       color: rgba(255, 255, 255, 0.94);
       font: inherit;
@@ -589,9 +645,28 @@
       cursor: pointer;
       white-space: nowrap;
       min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+    .cart-toggle::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      background:
+        linear-gradient(currentColor 0 0) center / 2px 10px no-repeat,
+        linear-gradient(currentColor 0 0) center / 10px 2px no-repeat;
+      flex: 0 0 auto;
     }
     .cart-toggle.is-selected {
       background: var(--red);
+    }
+    .cart-toggle.is-selected::before {
+      background:
+        linear-gradient(currentColor 0 0) center / 10px 2px no-repeat;
     }
     .selector-risk {
       border-left-width: 3px;
@@ -1075,15 +1150,11 @@
       .selector-card-main {
         gap: 6px;
       }
+      .selector-purchase-row {
+        gap: 10px;
+      }
       .selector-inline-price {
         font-size: 30px;
-      }
-      .selector-card-actions {
-        align-items: stretch;
-        flex-direction: column;
-      }
-      .cart-toggle {
-        width: 100%;
       }
       .selector-details {
         padding-top: 10px;
@@ -1162,6 +1233,18 @@
             <section class="section shell selector-page-section">
               
     <div class="selector-toolbar">
+      <div class="selector-search-row">
+        <label class="selector-search" for="selector-search-input">
+          <input
+            id="selector-search-input"
+            type="search"
+            inputmode="search"
+            autocomplete="off"
+            placeholder="搜索你的需求、场景或关键词，比如：开题、Zotero、翻译、复盘、小红书"
+          />
+        </label>
+        <div class="selector-search-hint">会匹配这张卡片里的全部文案，包括名称、适合谁、使用场景、产出、套餐位置和风险提示。</div>
+      </div>
       <div class="filter-row selector-filter-row">
         <button type="button" class="active" data-selector-filter="all">全部</button>
         <button type="button" data-selector-filter="academic">学术</button>
@@ -1831,6 +1914,7 @@
       </div>
     </article>
     </div>
+    <div class="selector-empty hidden" id="selector-empty-state">没有找到匹配的工作流。可以换个词试试，比如“开题”“翻译”“基金”“股票”“小红书”“设计”。</div>
             </section>
             
     </div>
@@ -1931,11 +2015,37 @@
       const state = {
         selectedIds: [],
         activeFilter: 'all',
+        searchQuery: '',
         orderId: '',
       };
 
+      document.querySelectorAll('[data-selector-card]').forEach((card) => {
+        const main = card.querySelector('.selector-card-main');
+        const summary = card.querySelector('.selector-summary');
+        const price = card.querySelector('.selector-inline-price');
+        const actions = card.querySelector('.selector-card-actions');
+        const button = actions?.querySelector('[data-cart-toggle]');
+
+        if (!main || !price || !button) return;
+
+        const purchaseRow = document.createElement('div');
+        purchaseRow.className = 'selector-purchase-row';
+        purchaseRow.appendChild(price);
+        purchaseRow.appendChild(button);
+
+        if (summary && summary.parentNode === main) {
+          main.insertBefore(purchaseRow, summary);
+        } else {
+          main.appendChild(purchaseRow);
+        }
+
+        actions?.remove();
+      });
+
+      const searchInput = document.getElementById('selector-search-input');
       const filterButtons = document.querySelectorAll('[data-selector-filter]');
       const selectorCards = document.querySelectorAll('[data-selector-card]');
+      const selectorEmptyState = document.getElementById('selector-empty-state');
       const cartButtons = document.querySelectorAll('[data-cart-toggle]');
       const openCartButton = document.getElementById('open-cart');
       const cartBarTitle = document.getElementById('cart-bar-title');
@@ -1997,6 +2107,28 @@
       function getCartTotal() {
         return getSelectedWorkflows().reduce((sum, item) => sum + item.cart_price, 0);
       }
+
+      function normalizeSearchText(value) {
+        return (value || '')
+          .toLowerCase()
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      const cardSearchIndex = new Map();
+      selectorCards.forEach((card) => {
+        const workflowId = card.dataset.workflowId;
+        const item = selectorMap.get(workflowId) || {};
+        const combinedText = [
+          card.textContent || '',
+          item.name || '',
+          item.segment || '',
+          item.package_position || '',
+          item.warning_label || '',
+          (item.install_display_names || []).join(' '),
+        ].join(' ');
+        cardSearchIndex.set(workflowId, normalizeSearchText(combinedText));
+      });
 
       function setModalOpen(modal, open) {
         if (!modal) return;
@@ -2112,15 +2244,26 @@
       }
 
       function applyFilter() {
+        const query = normalizeSearchText(state.searchQuery);
+        let visibleCount = 0;
+
         selectorCards.forEach((card) => {
           const workflowId = card.dataset.workflowId;
           const isSelected = state.selectedIds.includes(workflowId);
-          const matches =
+          const matchesFilter =
             state.activeFilter === 'all' ||
             (state.activeFilter === 'selected' && isSelected) ||
             card.dataset.segment === state.activeFilter;
+          const searchText = cardSearchIndex.get(workflowId) || '';
+          const matchesSearch = !query || searchText.includes(query);
+          const matches = matchesFilter && matchesSearch;
           card.classList.toggle('hidden', !matches);
+          if (matches) visibleCount += 1;
         });
+
+        if (selectorEmptyState) {
+          selectorEmptyState.classList.toggle('hidden', visibleCount > 0);
+        }
       }
 
       function renderCardStates() {
@@ -2270,6 +2413,13 @@
           render();
         });
       });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (event) => {
+          state.searchQuery = event.target.value || '';
+          render();
+        });
+      }
 
       cartButtons.forEach((button) => {
         button.addEventListener('click', () => {
