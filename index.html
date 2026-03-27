@@ -1136,6 +1136,74 @@
       color: var(--ink-soft);
       text-align: center;
     }
+    .preview-modal-panel {
+      display: grid;
+      gap: 14px;
+    }
+    .preview-modal-copy {
+      margin: 6px 0 0;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .preview-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .preview-actions button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      background: rgba(18, 38, 63, 0.08);
+      color: var(--ink);
+    }
+    .preview-actions button.primary {
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.94);
+    }
+    .preview-actions button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .preview-image-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 180px;
+    }
+    .preview-image-frame {
+      width: min(560px, 100%);
+      margin: 0 auto;
+      padding: 12px;
+      border-radius: 24px;
+      background: rgba(255, 250, 242, 0.96);
+      border: 1px solid rgba(18, 38, 63, 0.08);
+    }
+    .preview-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      -webkit-user-select: auto;
+      user-select: auto;
+      -webkit-touch-callout: default;
+      pointer-events: auto;
+      background: white;
+    }
+    .preview-empty {
+      padding: 18px 0;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
+    }
     body.selector-modal-open {
       overflow: hidden;
     }
@@ -1259,9 +1327,13 @@
       .modal-actions, .receipt-actions {
         width: 100%;
       }
-      .modal-actions button, .receipt-actions button {
+      .modal-actions button, .receipt-actions button, .preview-actions button {
         width: 100%;
         min-height: 46px;
+      }
+      .preview-actions {
+        flex-direction: column;
+        align-items: stretch;
       }
       .receipt-sheet {
         width: min(100%, 420px);
@@ -2059,6 +2131,28 @@
   </div>
 
   <div class="selector-toast" id="selector-search-toast" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="selector-modal" id="preview-modal" aria-hidden="true">
+    <div class="selector-modal-panel preview-modal-panel">
+      <div class="selector-modal-head">
+        <div>
+          <h2>保存图片</h2>
+          <p class="preview-modal-copy" id="preview-modal-copy">图片生成后，可直接长按保存。</p>
+        </div>
+        <button type="button" class="selector-close" data-close-preview="true" aria-label="关闭图片预览">×</button>
+      </div>
+      <div class="preview-actions">
+        <button type="button" id="preview-back-to-receipt">返回小票</button>
+        <button type="button" class="primary" id="download-preview-image">下载 PNG</button>
+      </div>
+      <div class="preview-image-wrap">
+        <div class="preview-image-frame">
+          <img id="preview-image" class="preview-image hidden" alt="工作流选购单图片预览" />
+          <div id="preview-empty" class="preview-empty">点击导出后，这里会显示一张可保存的图片。</div>
+        </div>
+      </div>
+    </div>
+  </div>
   
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
@@ -2099,6 +2193,8 @@
         activeFilter: 'all',
         searchQuery: '',
         orderId: '',
+        previewImageUrl: '',
+        previewFilename: '',
       };
       let searchToastTimer = null;
       let searchToastInputTimer = null;
@@ -2154,6 +2250,14 @@
       const receiptBackToCart = document.getElementById('receipt-back-to-cart');
       const exportButton = document.getElementById('export-receipt');
 
+      const previewModal = document.getElementById('preview-modal');
+      const closePreviewButtons = document.querySelectorAll('[data-close-preview]');
+      const previewBackToReceipt = document.getElementById('preview-back-to-receipt');
+      const previewModalCopy = document.getElementById('preview-modal-copy');
+      const previewImage = document.getElementById('preview-image');
+      const previewEmpty = document.getElementById('preview-empty');
+      const downloadPreviewButton = document.getElementById('download-preview-image');
+
       const receiptItems = document.getElementById('receipt-items');
       const receiptInstall = document.getElementById('receipt-install');
       const receiptInstallDetails = document.getElementById('receipt-install-details');
@@ -2187,6 +2291,18 @@
         ];
         const suffix = String(Math.floor(Math.random() * 9000) + 1000);
         return `OCW-${parts.join('')}-${suffix}`;
+      }
+
+      function buildExportFilename() {
+        const stamp = new Date();
+        return `openclaw-workflow-receipt-${
+          stamp.getFullYear()
+        }${String(stamp.getMonth() + 1).padStart(2, '0')}${String(stamp.getDate()).padStart(
+          2,
+          '0'
+        )}-${String(stamp.getHours()).padStart(2, '0')}${String(
+          stamp.getMinutes()
+        ).padStart(2, '0')}${String(stamp.getSeconds()).padStart(2, '0')}.png`;
       }
 
       function getSelectedWorkflows() {
@@ -2241,6 +2357,10 @@
         document.body.classList.toggle('selector-modal-open', !!anyOpen);
       }
 
+      function isWeChatBrowser() {
+        return /micromessenger/i.test(window.navigator.userAgent || '');
+      }
+
       function openCartModal() {
         if (!state.selectedIds.length) return;
         setModalOpen(receiptModal, false);
@@ -2263,10 +2383,46 @@
         setModalOpen(receiptModal, false);
       }
 
+      function openPreviewModal() {
+        setModalOpen(previewModal, true);
+      }
+
+      function closePreviewModal() {
+        setModalOpen(previewModal, false);
+      }
+
+      function syncPreviewModal() {
+        const hasImage = !!state.previewImageUrl;
+        if (previewImage) {
+          previewImage.src = state.previewImageUrl || '';
+          previewImage.classList.toggle('hidden', !hasImage);
+        }
+        if (previewEmpty) {
+          previewEmpty.classList.toggle('hidden', hasImage);
+        }
+        if (previewModalCopy) {
+          previewModalCopy.textContent = isWeChatBrowser()
+            ? '微信内可直接长按下方图片保存到相册。'
+            : '可直接下载 PNG，也可以长按或右键保存图片。';
+        }
+        if (downloadPreviewButton) {
+          downloadPreviewButton.disabled = !hasImage;
+          downloadPreviewButton.classList.toggle('hidden', isWeChatBrowser());
+        }
+      }
+
+      function downloadDataUrl(dataUrl, filename) {
+        if (!dataUrl) return;
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        link.click();
+      }
+
       function exportReceiptImage() {
         if (!window.html2canvas || !state.selectedIds.length) return;
         exportButton.disabled = true;
-        exportButton.textContent = '导出中...';
+        exportButton.textContent = '生成中...';
 
         return window.html2canvas(document.getElementById('receipt-export'), {
           backgroundColor: '#fffaf2',
@@ -2274,19 +2430,14 @@
           useCORS: true,
         })
           .then((canvas) => {
-            const link = document.createElement('a');
-            const stamp = new Date();
-            const filename = `openclaw-workflow-receipt-${
-              stamp.getFullYear()
-            }${String(stamp.getMonth() + 1).padStart(2, '0')}${String(stamp.getDate()).padStart(
-              2,
-              '0'
-            )}-${String(stamp.getHours()).padStart(2, '0')}${String(
-              stamp.getMinutes()
-            ).padStart(2, '0')}${String(stamp.getSeconds()).padStart(2, '0')}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.download = filename;
-            link.click();
+            state.previewImageUrl = canvas.toDataURL('image/png');
+            state.previewFilename = buildExportFilename();
+            syncPreviewModal();
+            openPreviewModal();
+
+            if (!isWeChatBrowser()) {
+              downloadDataUrl(state.previewImageUrl, state.previewFilename);
+            }
           })
           .catch((error) => {
             window.alert(`导出失败：${error.message}`);
@@ -2559,6 +2710,10 @@
         button.addEventListener('click', closeReceiptModal);
       });
 
+      closePreviewButtons.forEach((button) => {
+        button.addEventListener('click', closePreviewModal);
+      });
+
       if (cartModal) {
         cartModal.addEventListener('click', (event) => {
           if (event.target === cartModal) closeCartModal();
@@ -2568,6 +2723,12 @@
       if (receiptModal) {
         receiptModal.addEventListener('click', (event) => {
           if (event.target === receiptModal) closeReceiptModal();
+        });
+      }
+
+      if (previewModal) {
+        previewModal.addEventListener('click', (event) => {
+          if (event.target === previewModal) closePreviewModal();
         });
       }
 
@@ -2597,6 +2758,20 @@
         });
       }
 
+      if (previewBackToReceipt) {
+        previewBackToReceipt.addEventListener('click', () => {
+          closePreviewModal();
+          setModalOpen(receiptModal, true);
+        });
+      }
+
+      if (downloadPreviewButton) {
+        downloadPreviewButton.addEventListener('click', () => {
+          if (!state.previewImageUrl) return;
+          downloadDataUrl(state.previewImageUrl, state.previewFilename || buildExportFilename());
+        });
+      }
+
       if (exportButton) {
         exportButton.addEventListener('click', () => {
           exportReceiptImage();
@@ -2605,6 +2780,10 @@
 
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
+          if (previewModal?.classList.contains('is-visible')) {
+            closePreviewModal();
+            return;
+          }
           if (receiptModal?.classList.contains('is-visible')) {
             closeReceiptModal();
             return;
@@ -2621,6 +2800,7 @@
         });
       }
 
+      syncPreviewModal();
       render();
     </script>
     
