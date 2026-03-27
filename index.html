@@ -533,12 +533,12 @@
       justify-content: space-between;
       align-items: start;
       gap: 10px;
-      padding-right: 44px;
+      padding-right: 58px;
     }
     .selector-card-main {
       display: grid;
       gap: 8px;
-      padding-right: 44px;
+      padding-right: 58px;
     }
     .selector-purchase-row {
       display: flex;
@@ -566,27 +566,36 @@
       list-style: none;
       display: grid;
       place-items: center;
-      width: 34px;
-      height: 34px;
+      width: 20px;
+      height: 20px;
+      padding: 8px;
       margin-left: 0;
-      border-radius: 999px;
       background: transparent;
-      border: 1px solid rgba(18, 38, 63, 0.1);
+      border: 0;
+      border-radius: 0;
       cursor: pointer;
       position: absolute;
-      top: 18px;
-      right: 18px;
-      z-index: 2;
+      top: 14px;
+      right: 14px;
+      z-index: 3;
+      opacity: 0.78;
+      transition: opacity 120ms ease, transform 120ms ease;
+    }
+    .selector-details summary:hover,
+    .selector-details summary:focus-visible {
+      opacity: 1;
+      transform: scale(1.06);
+      outline: none;
     }
     .selector-details summary::-webkit-details-marker {
       display: none;
     }
     .selector-details summary::after {
       content: "";
-      width: 9px;
-      height: 9px;
-      border-right: 2px solid var(--blue);
-      border-bottom: 2px solid var(--blue);
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid rgba(18, 38, 63, 0.72);
+      border-bottom: 2px solid rgba(18, 38, 63, 0.72);
       transform: rotate(45deg) translateY(-1px);
       transition: transform 160ms ease;
     }
@@ -1142,7 +1151,7 @@
       }
       .selector-card-head,
       .selector-card-main {
-        padding-right: 40px;
+        padding-right: 52px;
       }
       .selector-summary {
         display: none;
@@ -1160,8 +1169,8 @@
         padding-top: 10px;
       }
       .selector-details summary {
-        top: 14px;
-        right: 14px;
+        top: 12px;
+        right: 12px;
       }
       .cart-bar {
         padding-left: max(8px, env(safe-area-inset-left));
