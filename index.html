@@ -737,9 +737,7 @@
     }
     .cart-bar-shell {
       width: min(720px, calc(100vw - 24px));
-      display: flex;
-      align-items: stretch;
-      gap: 8px;
+      display: block;
       pointer-events: auto;
     }
     .cart-bar-button {
@@ -759,7 +757,6 @@
       cursor: pointer;
       backdrop-filter: blur(18px);
       pointer-events: auto;
-      flex: 1 1 auto;
     }
     .cart-bar-button:disabled {
       opacity: 0.92;
@@ -777,29 +774,6 @@
     .cart-bar-meta span {
       font-size: 12px;
       opacity: 0.76;
-    }
-    .cart-bar-checkout {
-      appearance: none;
-      border: 0;
-      border-radius: 22px 22px 0 0;
-      min-width: 132px;
-      padding: 14px 22px calc(14px + env(safe-area-inset-bottom));
-      background: var(--navy);
-      color: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 22px 54px rgba(17, 24, 39, 0.28);
-      font: inherit;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      backdrop-filter: blur(18px);
-      flex: 0 0 auto;
-    }
-    .cart-bar-checkout:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-    .cart-bar-checkout.hidden {
-      display: none;
     }
     .cart-bar-bump {
       animation: cart-bump 520ms ease;
@@ -951,7 +925,7 @@
       border-top: 1px dashed rgba(18, 38, 63, 0.16);
       border-bottom: 1px dashed rgba(18, 38, 63, 0.16);
     }
-    .cart-modal-footer, .receipt-actions {
+    .cart-modal-footer {
       display: flex;
       gap: 10px;
       align-items: center;
@@ -977,7 +951,7 @@
       flex-wrap: wrap;
       justify-content: end;
     }
-    .modal-actions button, .receipt-actions button {
+    .modal-actions button {
       appearance: none;
       border: 0;
       border-radius: 999px;
@@ -988,45 +962,244 @@
       background: rgba(18, 38, 63, 0.08);
       color: var(--ink);
     }
-    .modal-actions button.primary, .receipt-actions button.primary {
+    .modal-actions button.primary {
       background: var(--navy);
       color: rgba(255, 255, 255, 0.94);
     }
-    .modal-actions button:disabled, .receipt-actions button:disabled, .cart-bar-button:disabled {
+    .modal-actions button:disabled, .cart-bar-button:disabled {
       opacity: 0.45;
       cursor: not-allowed;
     }
+    .receipt-modal-panel {
+      width: min(980px, calc(100vw - 28px));
+      max-width: min(980px, calc(100vw - 28px));
+      margin: 0 auto;
+    }
     .receipt-actions {
+      display: grid;
+      gap: 12px;
       margin-top: 0;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
+    }
+    .receipt-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .receipt-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(18, 38, 63, 0.08);
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1;
+    }
+    .receipt-status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(18, 38, 63, 0.24);
+      box-shadow: 0 0 0 0 rgba(47, 109, 179, 0.18);
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .receipt-status-pill::before {
+      background: #56d3a8;
+      animation: receipt-status-pulse 0.8s ease infinite;
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .receipt-status-pill::before,
+    .receipt-modal-panel[data-receipt-phase="exported"] .receipt-status-pill::before {
+      background: var(--emerald);
+    }
+    .receipt-action-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .receipt-action-row button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      background: rgba(18, 38, 63, 0.08);
+      color: var(--ink);
+      transition: transform 160ms ease, opacity 160ms ease, background 160ms ease;
+    }
+    .receipt-action-row button:hover {
+      transform: translateY(-1px);
+    }
+    .receipt-action-row button.primary {
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.96);
+    }
+    .receipt-action-row button.secondary {
+      background: rgba(47, 109, 179, 0.12);
+      color: var(--blue);
+    }
+    .receipt-action-row button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .receipt-stage {
+      display: grid;
+      justify-items: center;
+      gap: 0;
+      margin-bottom: 16px;
+    }
+    .printer-machine {
+      position: relative;
+      width: min(620px, 100%);
+      z-index: 3;
+      display: grid;
+      justify-items: center;
+      margin-bottom: -26px;
+    }
+    .printer-lid {
+      width: min(460px, calc(100% - 120px));
+      height: 30px;
+      border-radius: 28px 28px 10px 10px;
+      background: linear-gradient(180deg, rgba(86, 99, 123, 0.95) 0%, rgba(42, 51, 67, 0.98) 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26), 0 16px 26px rgba(8, 15, 27, 0.24);
+    }
+    .printer-shell {
+      position: relative;
+      width: min(620px, 100%);
+      padding: 26px 28px 38px;
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.1), transparent 36%),
+        linear-gradient(180deg, #374355 0%, #1c2531 62%, #101720 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -18px 28px rgba(0, 0, 0, 0.18),
+        0 34px 54px rgba(6, 10, 18, 0.34);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .printer-shell::after {
+      content: "";
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 14px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(8, 10, 15, 0.6));
+      opacity: 0.7;
+    }
+    .printer-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+      color: rgba(255, 255, 255, 0.72);
+    }
+    .printer-brand {
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    .printer-leds {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .printer-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+    .printer-led-green {
+      background: rgba(86, 211, 168, 0.34);
+    }
+    .printer-led-red {
+      background: rgba(240, 104, 104, 0.24);
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .printer-led-green {
+      animation: printer-led-pulse 0.68s ease infinite;
+    }
+    .printer-slot {
+      position: relative;
+      width: min(410px, 100%);
+      margin: 0 auto;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(8, 12, 18, 0.96) 0%, rgba(0, 0, 0, 0.72) 100%);
+      box-shadow:
+        inset 0 5px 8px rgba(255, 255, 255, 0.04),
+        inset 0 -6px 10px rgba(0, 0, 0, 0.6),
+        0 18px 28px rgba(0, 0, 0, 0.24);
+      overflow: hidden;
+    }
+    .printer-slot-glow {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      top: 6px;
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 15%, rgba(255, 255, 255, 0.08) 55%, transparent 100%);
+    }
+    .printer-paper-tip {
+      position: absolute;
+      left: 50%;
+      top: 14px;
+      width: min(360px, calc(100% - 56px));
+      height: 18px;
+      transform: translateX(-50%);
+      border-radius: 0 0 12px 12px;
+      background:
+        linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(242, 235, 222, 0.98) 100%);
+      box-shadow: 0 12px 16px rgba(0, 0, 0, 0.12);
+      opacity: 0;
+      transform-origin: top center;
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .printer-paper-tip {
+      animation: printer-paper-tip 0.9s ease 0.12s forwards;
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .printer-paper-tip,
+    .receipt-modal-panel[data-receipt-phase="exported"] .printer-paper-tip {
+      opacity: 1;
+      height: 18px;
     }
     .receipt-sheet {
       position: relative;
-      overflow: hidden;
-      width: min(520px, 100%);
+      width: min(540px, calc(100% - 18px));
       margin: 0 auto;
       padding: 0;
-      border-radius: 0;
-      background: transparent;
-      border: 0;
-      box-shadow: none;
-    }
-    .receipt-sheet::after {
-      display: none;
+      z-index: 2;
+      transform-origin: top center;
+      clip-path: inset(0 0 0 0 round 26px);
     }
     .receipt-paper {
       position: relative;
       z-index: 1;
       display: grid;
       gap: 12px;
-      padding: 16px;
-      border-radius: 22px;
+      min-height: 540px;
+      padding: 18px 18px 22px;
+      border-radius: 24px;
       background:
-        linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(248, 240, 228, 0.98) 100%),
-        repeating-linear-gradient(180deg, rgba(18, 38, 63, 0.018) 0 1px, transparent 1px 24px);
-      border: 1px solid rgba(18, 38, 63, 0.08);
-      box-shadow: 0 16px 28px rgba(17, 24, 39, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.74);
+        linear-gradient(180deg, rgba(255, 253, 248, 0.99) 0%, rgba(248, 240, 228, 0.99) 100%),
+        repeating-linear-gradient(180deg, rgba(18, 38, 63, 0.02) 0 1px, transparent 1px 26px),
+        repeating-linear-gradient(90deg, rgba(18, 38, 63, 0.012) 0 1px, transparent 1px 18px);
+      border: 1px solid rgba(18, 38, 63, 0.1);
+      box-shadow:
+        0 34px 44px rgba(17, 24, 39, 0.12),
+        0 8px 16px rgba(17, 24, 39, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
       font-family: "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      color: rgba(27, 36, 51, 0.92);
     }
     .receipt-paper::before,
     .receipt-paper::after {
@@ -1047,6 +1220,28 @@
     .receipt-paper::after {
       bottom: -5px;
       transform: scaleY(-1);
+    }
+    .receipt-paper::selection {
+      background: rgba(47, 109, 179, 0.16);
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .receipt-sheet {
+      animation: receipt-feed 3.05s cubic-bezier(0.2, 0.94, 0.22, 0.98) forwards;
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .receipt-paper {
+      filter: contrast(0.94) saturate(0.96);
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .receipt-details {
+      pointer-events: none;
+    }
+    .receipt-reveal-target {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .receipt-reveal-target {
+      opacity: 0;
+      transform: translateY(4px);
+      animation: receipt-line-print 0.36s linear forwards;
+      animation-delay: var(--line-delay, 0ms);
     }
     .receipt-head {
       display: grid;
@@ -1194,73 +1389,103 @@
       color: var(--ink-soft);
       text-align: center;
     }
-    .preview-modal-panel {
+    .receipt-save-zone {
       display: grid;
       gap: 14px;
+      width: min(560px, 100%);
+      margin: 0 auto;
     }
-    .preview-modal-copy {
-      margin: 6px 0 0;
+    .receipt-save-card {
+      padding: 14px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(18, 38, 63, 0.08);
+      box-shadow: 0 22px 40px rgba(17, 24, 39, 0.08);
+    }
+    .receipt-save-head {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .receipt-save-head strong {
+      font-size: 16px;
+      line-height: 1.3;
+    }
+    .receipt-save-head span {
       color: var(--ink-soft);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .preview-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-    .preview-actions button {
-      appearance: none;
-      border: 0;
-      border-radius: 999px;
-      padding: 12px 14px;
-      font: inherit;
       font-size: 13px;
-      cursor: pointer;
-      background: rgba(18, 38, 63, 0.08);
-      color: var(--ink);
+      line-height: 1.55;
     }
-    .preview-actions button.primary {
-      background: var(--navy);
-      color: rgba(255, 255, 255, 0.94);
-    }
-    .preview-actions button:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-    .preview-image-wrap {
+    .receipt-preview-frame {
       display: grid;
       place-items: center;
       min-height: 180px;
-    }
-    .preview-image-frame {
-      width: min(560px, 100%);
-      margin: 0 auto;
-      padding: 12px;
-      border-radius: 24px;
+      padding: 14px;
+      border-radius: 22px;
       background: rgba(255, 250, 242, 0.96);
       border: 1px solid rgba(18, 38, 63, 0.08);
     }
-    .preview-image {
+    .receipt-preview-image {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: auto;
-      border-radius: 16px;
+      border-radius: 18px;
       -webkit-user-select: auto;
       user-select: auto;
       -webkit-touch-callout: default;
       pointer-events: auto;
       background: white;
     }
-    .preview-empty {
+    .receipt-preview-empty {
       padding: 18px 0;
       color: var(--ink-soft);
       font-size: 14px;
       line-height: 1.6;
       text-align: center;
+    }
+    @keyframes receipt-status-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(47, 109, 179, 0.22); }
+      100% { box-shadow: 0 0 0 10px rgba(47, 109, 179, 0); }
+    }
+    @keyframes printer-led-pulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(86, 211, 168, 0.2), 0 0 12px rgba(86, 211, 168, 0.24); opacity: 0.8; }
+      50% { box-shadow: 0 0 0 rgba(86, 211, 168, 0.3), 0 0 20px rgba(86, 211, 168, 0.5); opacity: 1; }
+    }
+    @keyframes printer-paper-tip {
+      0% { opacity: 0; height: 0; }
+      40% { opacity: 1; height: 24px; }
+      100% { opacity: 1; height: 18px; }
+    }
+    @keyframes receipt-feed {
+      0% {
+        clip-path: inset(0 0 100% 0 round 26px);
+        transform: translateY(-90px);
+      }
+      18% {
+        clip-path: inset(0 0 88% 0 round 26px);
+        transform: translateY(-58px);
+      }
+      56% {
+        clip-path: inset(0 0 36% 0 round 26px);
+        transform: translateY(-14px);
+      }
+      100% {
+        clip-path: inset(0 0 0 0 round 26px);
+        transform: translateY(0);
+      }
+    }
+    @keyframes receipt-line-print {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+        filter: blur(2px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
     }
     body.selector-modal-open {
       overflow: hidden;
@@ -1352,11 +1577,6 @@
         padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
         gap: 12px;
       }
-      .cart-bar-checkout {
-        min-width: 112px;
-        border-radius: 18px 18px 0 0;
-        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-      }
       .cart-bar-meta strong {
         font-size: 15px;
       }
@@ -1386,24 +1606,45 @@
       .cart-modal-item {
         padding: 12px 14px;
       }
-      .cart-modal-footer, .receipt-actions {
+      .cart-modal-footer {
         flex-direction: column;
         align-items: stretch;
       }
-      .modal-actions, .receipt-actions {
+      .modal-actions,
+      .receipt-action-row,
+      .receipt-status-row {
         width: 100%;
+        flex-direction: column;
+        align-items: stretch;
       }
-      .modal-actions button, .receipt-actions button, .preview-actions button {
+      .modal-actions button,
+      .receipt-action-row button {
         width: 100%;
         min-height: 46px;
       }
-      .preview-actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
       .receipt-sheet {
         width: min(100%, 420px);
-        border-radius: 24px;
+      }
+      .printer-machine {
+        width: 100%;
+        margin-bottom: -18px;
+      }
+      .printer-shell {
+        padding: 20px 18px 30px;
+        border-radius: 26px;
+      }
+      .printer-lid {
+        width: calc(100% - 96px);
+      }
+      .receipt-paper {
+        min-height: 500px;
+        padding: 16px 15px 20px;
+      }
+      .receipt-save-zone {
+        width: 100%;
+      }
+      .receipt-preview-frame {
+        padding: 10px;
       }
     }
     </style>
@@ -2117,7 +2358,6 @@
           <span id="cart-bar-subtitle">先挑几个工作流</span>
         </div>
       </button>
-      <button type="button" class="cart-bar-checkout hidden" id="open-checkout" disabled>结算</button>
     </div>
   </div>
 
@@ -2140,45 +2380,69 @@
         </div>
         <div class="modal-actions">
           <button type="button" id="clear-cart">清空购物车</button>
-          <button type="button" class="primary" id="cart-checkout" disabled>去结算</button>
+          <button type="button" class="primary" id="cart-checkout" disabled>结算</button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="selector-modal" id="receipt-modal" aria-hidden="true">
-    <div class="selector-modal-panel">
+    <div class="selector-modal-panel receipt-modal-panel" id="receipt-modal-panel" data-receipt-phase="cart">
       <div class="selector-modal-head">
         <div>
           <h2>打印小票</h2>
-          <p>确认无误后可导出 PNG，用于沟通方案与报价。</p>
+          <p id="receipt-phase-copy">点击结算后，这台热敏打印机会打印出一张可保存的小票。</p>
         </div>
         <button type="button" class="selector-close" data-close-receipt="true" aria-label="关闭小票">×</button>
       </div>
       <div class="receipt-actions">
-        <button type="button" id="receipt-back-to-cart">返回购物车</button>
-        <button type="button" class="primary" id="export-receipt" disabled>导出 PNG</button>
+        <div class="receipt-status-row">
+          <div class="receipt-status-pill" id="receipt-phase-indicator">打印中...</div>
+        </div>
+        <div class="receipt-action-row">
+          <button type="button" id="receipt-back-to-cart">返回购物车</button>
+          <button type="button" class="secondary hidden" id="receipt-reprint">重新打印</button>
+          <button type="button" class="primary" id="export-receipt" disabled>保存小票</button>
+          <button type="button" class="hidden" id="download-exported-receipt">下载 PNG</button>
+        </div>
       </div>
-      <div class="receipt-sheet" id="receipt-export">
-        <div class="receipt-paper">
-          <div class="receipt-head">
+      <div class="receipt-stage">
+        <div class="printer-machine" aria-hidden="true">
+          <div class="printer-lid"></div>
+          <div class="printer-shell">
+            <div class="printer-topline">
+              <div class="printer-brand">Thermal Print Station</div>
+              <div class="printer-leds">
+                <span class="printer-led printer-led-green"></span>
+                <span class="printer-led printer-led-red"></span>
+              </div>
+            </div>
+            <div class="printer-slot">
+              <span class="printer-slot-glow"></span>
+              <span class="printer-paper-tip"></span>
+            </div>
+          </div>
+        </div>
+        <div class="receipt-sheet" id="receipt-export">
+          <div class="receipt-paper">
+          <div class="receipt-head receipt-reveal-target">
             <strong class="receipt-store">OPENCLAW</strong>
             <div>打印小票</div>
           </div>
           <div class="receipt-meta">
-            <div class="receipt-meta-row"><span>订单号</span><strong id="receipt-order-id">OCW-0000</strong></div>
-            <div class="receipt-meta-row"><span>生成时间</span><span id="receipt-time">--</span></div>
-            <div class="receipt-meta-row"><span>已选数量</span><span id="receipt-count">0 项</span></div>
+            <div class="receipt-meta-row receipt-reveal-target"><span>订单号</span><strong id="receipt-order-id">OCW-0000</strong></div>
+            <div class="receipt-meta-row receipt-reveal-target"><span>生成时间</span><span id="receipt-time">--</span></div>
+            <div class="receipt-meta-row receipt-reveal-target"><span>已选数量</span><span id="receipt-count">0 项</span></div>
           </div>
-          <div class="receipt-section-title">已选工作流</div>
+          <div class="receipt-section-title receipt-reveal-target">已选工作流</div>
           <div id="receipt-items" class="receipt-items">
             <div class="receipt-empty">先从购物车结算，这里才会显示小票。</div>
           </div>
-          <div class="receipt-total">
+          <div class="receipt-total receipt-reveal-target">
             <div class="receipt-total-row"><span>小计</span><span id="receipt-subtotal">¥0</span></div>
             <div class="receipt-total-row"><span>总价</span><strong id="receipt-total">¥0</strong></div>
           </div>
-          <details class="receipt-details" id="receipt-install-details">
+          <details class="receipt-details receipt-reveal-target" id="receipt-install-details">
             <summary>能力清单</summary>
             <div class="receipt-details-body">
               <div id="receipt-install" class="receipt-install-list">
@@ -2186,12 +2450,25 @@
               </div>
             </div>
           </details>
-          <div class="receipt-section-title">风险提示</div>
+          <div class="receipt-section-title receipt-reveal-target">风险提示</div>
           <div id="receipt-warnings" class="receipt-warning-list">
             <div class="receipt-small">当前无额外风控提示。</div>
           </div>
-          <div class="receipt-footer-note">
+          <div class="receipt-footer-note receipt-reveal-target">
             本页不涉及真实支付，导出的 PNG 仅用于选购确认与方案沟通。
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="receipt-save-zone hidden" id="receipt-save-zone">
+        <div class="receipt-save-card">
+          <div class="receipt-save-head">
+            <strong>保存这张小票</strong>
+            <span id="receipt-preview-copy">打印完成后，可在这里生成一张可直接保存的图片。</span>
+          </div>
+          <div class="receipt-preview-frame">
+            <img id="receipt-preview-image" class="receipt-preview-image hidden" alt="打印小票可保存图片" />
+            <div id="receipt-preview-empty" class="receipt-preview-empty">点击“保存小票”后，这里会生成一张可保存的图片。</div>
           </div>
         </div>
       </div>
@@ -2199,28 +2476,6 @@
   </div>
 
   <div class="selector-toast" id="selector-search-toast" aria-live="polite" aria-atomic="true"></div>
-
-  <div class="selector-modal" id="preview-modal" aria-hidden="true">
-    <div class="selector-modal-panel preview-modal-panel">
-      <div class="selector-modal-head">
-        <div>
-          <h2>保存图片</h2>
-          <p class="preview-modal-copy" id="preview-modal-copy">图片生成后，可直接长按保存。</p>
-        </div>
-        <button type="button" class="selector-close" data-close-preview="true" aria-label="关闭图片预览">×</button>
-      </div>
-      <div class="preview-actions">
-        <button type="button" id="preview-back-to-receipt">返回小票</button>
-        <button type="button" class="primary" id="download-preview-image">下载 PNG</button>
-      </div>
-      <div class="preview-image-wrap">
-        <div class="preview-image-frame">
-          <img id="preview-image" class="preview-image hidden" alt="打印小票图片预览" />
-          <div id="preview-empty" class="preview-empty">点击导出后，这里会显示一张可保存的图片。</div>
-        </div>
-      </div>
-    </div>
-  </div>
   
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
@@ -2261,6 +2516,8 @@
         activeFilter: 'all',
         searchQuery: '',
         orderId: '',
+        receiptPhase: 'cart',
+        receiptPrintTimer: null,
         previewImageUrl: '',
         previewFilename: '',
       };
@@ -2301,7 +2558,6 @@
       const searchToast = document.getElementById('selector-search-toast');
       const cartButtons = document.querySelectorAll('[data-cart-toggle]');
       const openCartButton = document.getElementById('open-cart');
-      const openCheckoutButton = document.getElementById('open-checkout');
       const cartBarTitle = document.getElementById('cart-bar-title');
       const cartBarSubtitle = document.getElementById('cart-bar-subtitle');
 
@@ -2314,17 +2570,18 @@
       const clearCartButton = document.getElementById('clear-cart');
 
       const receiptModal = document.getElementById('receipt-modal');
+      const receiptModalPanel = document.getElementById('receipt-modal-panel');
       const closeReceiptButtons = document.querySelectorAll('[data-close-receipt]');
+      const receiptPhaseCopy = document.getElementById('receipt-phase-copy');
+      const receiptPhaseIndicator = document.getElementById('receipt-phase-indicator');
       const receiptBackToCart = document.getElementById('receipt-back-to-cart');
+      const receiptReprintButton = document.getElementById('receipt-reprint');
       const exportButton = document.getElementById('export-receipt');
-
-      const previewModal = document.getElementById('preview-modal');
-      const closePreviewButtons = document.querySelectorAll('[data-close-preview]');
-      const previewBackToReceipt = document.getElementById('preview-back-to-receipt');
-      const previewModalCopy = document.getElementById('preview-modal-copy');
-      const previewImage = document.getElementById('preview-image');
-      const previewEmpty = document.getElementById('preview-empty');
-      const downloadPreviewButton = document.getElementById('download-preview-image');
+      const downloadReceiptButton = document.getElementById('download-exported-receipt');
+      const receiptSaveZone = document.getElementById('receipt-save-zone');
+      const receiptPreviewCopy = document.getElementById('receipt-preview-copy');
+      const receiptPreviewImage = document.getElementById('receipt-preview-image');
+      const receiptPreviewEmpty = document.getElementById('receipt-preview-empty');
 
       const receiptItems = document.getElementById('receipt-items');
       const receiptInstall = document.getElementById('receipt-install');
@@ -2429,7 +2686,140 @@
         return /micromessenger/i.test(window.navigator.userAgent || '');
       }
 
+      function clearReceiptPrintTimer() {
+        if (state.receiptPrintTimer) {
+          window.clearTimeout(state.receiptPrintTimer);
+          state.receiptPrintTimer = null;
+        }
+      }
+
+      function setReceiptPhase(phase) {
+        state.receiptPhase = phase;
+        if (receiptModalPanel) {
+          receiptModalPanel.dataset.receiptPhase = phase;
+        }
+        syncReceiptControls();
+        syncReceiptPreview();
+      }
+
+      function syncReceiptRevealOrder() {
+        document
+          .querySelectorAll('#receipt-export .receipt-reveal-target')
+          .forEach((node, index) => {
+            node.style.setProperty('--line-delay', `${360 + index * 85}ms`);
+          });
+      }
+
+      function syncReceiptControls() {
+        const hasItems = !!state.selectedIds.length;
+        const phase = state.receiptPhase;
+
+        if (receiptPhaseCopy) {
+          receiptPhaseCopy.textContent =
+            phase === 'printing'
+              ? '热敏打印机正在出纸，请稍等片刻。'
+              : phase === 'printed'
+              ? '打印完成后，可以把这张小票保存成图片。'
+              : phase === 'exported'
+              ? '图片已经生成，可直接保存或下载。'
+              : '点击结算后，这台热敏打印机会打印出一张可保存的小票。';
+        }
+
+        if (receiptPhaseIndicator) {
+          receiptPhaseIndicator.textContent =
+            phase === 'printing'
+              ? '打印中...'
+              : phase === 'printed'
+              ? '打印完成'
+              : phase === 'exported'
+              ? '图片已生成'
+              : '等待打印';
+        }
+
+        if (exportButton) {
+          exportButton.disabled = !hasItems || phase === 'printing';
+          exportButton.textContent =
+            phase === 'printing'
+              ? '打印中...'
+              : phase === 'exported'
+              ? '重新生成图片'
+              : '保存小票';
+        }
+
+        if (receiptReprintButton) {
+          receiptReprintButton.classList.toggle('hidden', !hasItems || phase === 'printing');
+          receiptReprintButton.disabled = !hasItems;
+        }
+
+        if (downloadReceiptButton) {
+          const showDownload = phase === 'exported' && !!state.previewImageUrl && !isWeChatBrowser();
+          downloadReceiptButton.classList.toggle('hidden', !showDownload);
+          downloadReceiptButton.disabled = !showDownload;
+        }
+      }
+
+      function syncReceiptPreview() {
+        const hasItems = !!state.selectedIds.length;
+        const phase = state.receiptPhase;
+        const hasImage = !!state.previewImageUrl;
+        const showSaveZone = hasItems && phase !== 'printing';
+
+        if (receiptSaveZone) {
+          receiptSaveZone.classList.toggle('hidden', !showSaveZone);
+        }
+
+        if (receiptPreviewImage) {
+          receiptPreviewImage.src = state.previewImageUrl || '';
+          receiptPreviewImage.classList.toggle('hidden', !hasImage);
+        }
+
+        if (receiptPreviewEmpty) {
+          receiptPreviewEmpty.classList.toggle('hidden', hasImage);
+        }
+
+        if (receiptPreviewCopy) {
+          receiptPreviewCopy.textContent = hasImage
+            ? isWeChatBrowser()
+              ? '微信内可直接长按下方图片保存到相册。'
+              : '图片已生成，可直接下载 PNG，也可以长按或右键保存。'
+            : '打印完成后，可在这里生成一张可直接保存的图片。';
+        }
+      }
+
+      function resetReceiptArtifacts({ preserveOrderId = false } = {}) {
+        clearReceiptPrintTimer();
+        state.previewImageUrl = '';
+        state.previewFilename = '';
+        if (!preserveOrderId) {
+          state.orderId = '';
+        }
+        if (receiptInstallDetails) {
+          receiptInstallDetails.open = false;
+        }
+        setReceiptPhase('cart');
+      }
+
+      function startReceiptPrinting() {
+        resetReceiptArtifacts({ preserveOrderId: true });
+        renderReceipt();
+
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            setReceiptPhase('printing');
+            renderReceipt();
+            syncReceiptRevealOrder();
+          });
+        });
+
+        state.receiptPrintTimer = window.setTimeout(() => {
+          setReceiptPhase('printed');
+          renderReceipt();
+          syncReceiptRevealOrder();
+        }, 3200);
+      }
+
       function openCartModal() {
+        clearReceiptPrintTimer();
         setModalOpen(receiptModal, false);
         setModalOpen(cartModal, true);
       }
@@ -2441,41 +2831,14 @@
       function openReceiptModal() {
         if (!state.selectedIds.length) return;
         state.orderId = buildOrderId();
-        renderReceipt();
         setModalOpen(cartModal, false);
         setModalOpen(receiptModal, true);
+        startReceiptPrinting();
       }
 
       function closeReceiptModal() {
+        clearReceiptPrintTimer();
         setModalOpen(receiptModal, false);
-      }
-
-      function openPreviewModal() {
-        setModalOpen(previewModal, true);
-      }
-
-      function closePreviewModal() {
-        setModalOpen(previewModal, false);
-      }
-
-      function syncPreviewModal() {
-        const hasImage = !!state.previewImageUrl;
-        if (previewImage) {
-          previewImage.src = state.previewImageUrl || '';
-          previewImage.classList.toggle('hidden', !hasImage);
-        }
-        if (previewEmpty) {
-          previewEmpty.classList.toggle('hidden', hasImage);
-        }
-        if (previewModalCopy) {
-          previewModalCopy.textContent = isWeChatBrowser()
-            ? '微信内可直接长按下方图片保存到相册。'
-            : '可直接下载 PNG，也可以长按或右键保存图片。';
-        }
-        if (downloadPreviewButton) {
-          downloadPreviewButton.disabled = !hasImage;
-          downloadPreviewButton.classList.toggle('hidden', isWeChatBrowser());
-        }
       }
 
       function downloadDataUrl(dataUrl, filename) {
@@ -2514,7 +2877,7 @@
       }
 
       function exportReceiptImage() {
-        if (!window.html2canvas || !state.selectedIds.length) return;
+        if (!window.html2canvas || !state.selectedIds.length || state.receiptPhase === 'printing') return;
         exportButton.disabled = true;
         exportButton.textContent = '生成中...';
 
@@ -2529,19 +2892,14 @@
           .then((canvas) => {
             state.previewImageUrl = canvas.toDataURL('image/png');
             state.previewFilename = buildExportFilename();
-            syncPreviewModal();
-            openPreviewModal();
-
-            if (!isWeChatBrowser()) {
-              downloadDataUrl(state.previewImageUrl, state.previewFilename);
-            }
+            setReceiptPhase('exported');
+            syncReceiptPreview();
           })
           .catch((error) => {
             window.alert(`导出失败：${error.message}`);
           })
           .finally(() => {
-            exportButton.disabled = !state.selectedIds.length;
-            exportButton.textContent = '导出 PNG';
+            syncReceiptControls();
           });
       }
 
@@ -2653,11 +3011,6 @@
         if (openCartButton) {
           openCartButton.disabled = false;
         }
-
-        if (openCheckoutButton) {
-          openCheckoutButton.disabled = !hasItems;
-          openCheckoutButton.classList.toggle('hidden', !hasItems);
-        }
       }
 
       function renderCartModal() {
@@ -2722,14 +3075,15 @@
           }
           receiptWarnings.innerHTML =
             '<div class="receipt-small">当前无额外风控提示。</div>';
-          exportButton.disabled = true;
+          syncReceiptControls();
+          syncReceiptPreview();
           return;
         }
 
         receiptItems.innerHTML = selectedWorkflows
           .map(
             (item) => `
-              <div class="receipt-item">
+              <div class="receipt-item receipt-reveal-target">
                 <div class="receipt-item-row">
                   <span class="receipt-item-name">${item.name}工作流</span>
                   <strong>${item.cart_price_label}</strong>
@@ -2748,11 +3102,13 @@
 
         receiptWarnings.innerHTML = warnings.length
           ? warnings
-              .map((warning) => `<div class="receipt-warning-note">${warning}</div>`)
+              .map((warning) => `<div class="receipt-warning-note receipt-reveal-target">${warning}</div>`)
               .join('')
-          : '<div class="receipt-small">当前组合无额外合规提示。</div>';
+          : '<div class="receipt-small receipt-reveal-target">当前组合无额外合规提示。</div>';
 
-        exportButton.disabled = false;
+        syncReceiptControls();
+        syncReceiptPreview();
+        syncReceiptRevealOrder();
       }
 
       function render() {
@@ -2805,20 +3161,12 @@
         openCartButton.addEventListener('click', openCartModal);
       }
 
-      if (openCheckoutButton) {
-        openCheckoutButton.addEventListener('click', openReceiptModal);
-      }
-
       closeCartButtons.forEach((button) => {
         button.addEventListener('click', closeCartModal);
       });
 
       closeReceiptButtons.forEach((button) => {
         button.addEventListener('click', closeReceiptModal);
-      });
-
-      closePreviewButtons.forEach((button) => {
-        button.addEventListener('click', closePreviewModal);
       });
 
       if (cartModal) {
@@ -2833,12 +3181,6 @@
         });
       }
 
-      if (previewModal) {
-        previewModal.addEventListener('click', (event) => {
-          if (event.target === previewModal) closePreviewModal();
-        });
-      }
-
       if (cartItems) {
         cartItems.addEventListener('click', (event) => {
           const target = event.target.closest('[data-remove-workflow]');
@@ -2850,6 +3192,7 @@
       if (clearCartButton) {
         clearCartButton.addEventListener('click', () => {
           state.selectedIds = [];
+          resetReceiptArtifacts();
           render();
         });
       }
@@ -2865,15 +3208,16 @@
         });
       }
 
-      if (previewBackToReceipt) {
-        previewBackToReceipt.addEventListener('click', () => {
-          closePreviewModal();
-          setModalOpen(receiptModal, true);
+      if (receiptReprintButton) {
+        receiptReprintButton.addEventListener('click', () => {
+          if (!state.selectedIds.length) return;
+          state.orderId = buildOrderId();
+          startReceiptPrinting();
         });
       }
 
-      if (downloadPreviewButton) {
-        downloadPreviewButton.addEventListener('click', () => {
+      if (downloadReceiptButton) {
+        downloadReceiptButton.addEventListener('click', () => {
           if (!state.previewImageUrl) return;
           downloadDataUrl(state.previewImageUrl, state.previewFilename || buildExportFilename());
         });
@@ -2887,10 +3231,6 @@
 
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-          if (previewModal?.classList.contains('is-visible')) {
-            closePreviewModal();
-            return;
-          }
           if (receiptModal?.classList.contains('is-visible')) {
             closeReceiptModal();
             return;
@@ -2907,7 +3247,8 @@
         });
       }
 
-      syncPreviewModal();
+      syncReceiptControls();
+      syncReceiptPreview();
       render();
     </script>
     
