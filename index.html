@@ -1101,6 +1101,7 @@
       padding-top: 24px;
       min-height: calc(var(--receipt-paper-height, 560px) + var(--receipt-slot-anchor, 148px) + 124px);
       --receipt-slot-anchor: 148px;
+      transition: min-height 520ms cubic-bezier(0.2, 0.86, 0.2, 1), padding-top 320ms ease;
     }
     .receipt-stage::before {
       content: "";
@@ -1116,6 +1117,7 @@
         linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0));
       pointer-events: none;
       opacity: 0.72;
+      transition: opacity 320ms ease, height 520ms cubic-bezier(0.2, 0.86, 0.2, 1);
     }
     .receipt-sheet {
       position: absolute;
@@ -1130,6 +1132,7 @@
       transform-origin: bottom center;
       overflow: visible;
       --receipt-paper-height: 560px;
+      transition: bottom 520ms cubic-bezier(0.2, 0.86, 0.2, 1), transform 520ms cubic-bezier(0.2, 0.86, 0.2, 1);
     }
     .receipt-sheet::after {
       content: "";
@@ -1143,6 +1146,7 @@
       filter: blur(6px);
       opacity: 0;
       pointer-events: none;
+      transition: opacity 220ms ease;
     }
     .printer-machine {
       position: absolute;
@@ -1155,6 +1159,8 @@
       margin-top: 0;
       transform: translateX(-50%);
       filter: drop-shadow(0 26px 34px rgba(7, 10, 16, 0.18));
+      transition: transform 560ms cubic-bezier(0.2, 0.86, 0.2, 1), opacity 320ms ease, filter 320ms ease;
+      transform-origin: bottom center;
     }
     .printer-machine::before,
     .printer-machine::after {
@@ -1369,6 +1375,57 @@
       font-family: "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       color: rgba(27, 36, 51, 0.92);
     }
+    .receipt-printhead {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 0;
+      height: 24px;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 220ms ease, transform 320ms ease;
+    }
+    .receipt-printhead-rail,
+    .receipt-printhead-ink,
+    .receipt-printhead-scan {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+    }
+    .receipt-printhead-rail {
+      inset: 3px 0 7px;
+      background:
+        linear-gradient(180deg, rgba(67, 79, 65, 0.98) 0%, rgba(28, 37, 31, 0.98) 100%);
+      box-shadow:
+        0 9px 18px rgba(10, 12, 18, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.34);
+      border: 1px solid rgba(206, 177, 125, 0.14);
+    }
+    .receipt-printhead-ink {
+      inset: 15px 4% 0;
+      height: 5px;
+      background:
+        linear-gradient(90deg, rgba(24, 31, 42, 0) 0%, rgba(31, 40, 54, 0.68) 12%, rgba(20, 28, 38, 0.92) 50%, rgba(31, 40, 54, 0.68) 88%, rgba(24, 31, 42, 0) 100%);
+      filter: blur(1.2px);
+      opacity: 0.82;
+    }
+    .receipt-printhead-scan {
+      top: 5px;
+      bottom: 8px;
+      width: 22%;
+      inset-inline: auto;
+      left: 2%;
+      background:
+        linear-gradient(90deg, rgba(255, 246, 224, 0) 0%, rgba(255, 246, 224, 0.82) 24%, rgba(255, 255, 255, 0.98) 56%, rgba(255, 246, 224, 0) 100%);
+      box-shadow:
+        0 0 16px rgba(255, 241, 214, 0.42),
+        0 0 4px rgba(255, 255, 255, 0.46);
+      filter: blur(0.25px);
+      opacity: 0.92;
+    }
     .receipt-paper::before,
     .receipt-paper::after {
       content: "";
@@ -1401,10 +1458,17 @@
       opacity: 0.72;
     }
     .receipt-modal-panel[data-receipt-phase="printing"] .receipt-paper {
-      filter: contrast(0.96) saturate(0.96);
+      filter: contrast(0.96) saturate(0.96) brightness(0.992);
     }
     .receipt-modal-panel[data-receipt-phase="printing"] .receipt-details {
       pointer-events: none;
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .receipt-printhead {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .receipt-modal-panel[data-receipt-phase="printing"] .receipt-printhead-scan {
+      animation: printhead-scan 0.46s cubic-bezier(0.32, 0, 0.68, 1) infinite alternate;
     }
     .receipt-reveal-target {
       opacity: 1;
@@ -1414,8 +1478,39 @@
       opacity: 0;
       transform: translateY(7px);
       filter: blur(0.9px);
-      animation: receipt-line-print 0.52s steps(6, end) forwards;
+      clip-path: inset(0 100% 0 0);
+      animation: receipt-line-print 0.58s steps(18, end) forwards;
       animation-delay: var(--line-delay, 0ms);
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .receipt-stage,
+    .receipt-modal-panel[data-receipt-phase="exported"] .receipt-stage {
+      min-height: calc(var(--receipt-paper-height, 560px) + 36px);
+      padding-top: 12px;
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .receipt-stage::before,
+    .receipt-modal-panel[data-receipt-phase="exported"] .receipt-stage::before {
+      opacity: 0.42;
+      height: calc(var(--receipt-paper-height, 560px) + 58px);
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .receipt-sheet,
+    .receipt-modal-panel[data-receipt-phase="exported"] .receipt-sheet {
+      bottom: 12px;
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .receipt-sheet::after,
+    .receipt-modal-panel[data-receipt-phase="exported"] .receipt-sheet::after {
+      opacity: 0.52;
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .receipt-printhead,
+    .receipt-modal-panel[data-receipt-phase="exported"] .receipt-printhead {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    .receipt-modal-panel[data-receipt-phase="printed"] .printer-machine,
+    .receipt-modal-panel[data-receipt-phase="exported"] .printer-machine {
+      opacity: 0;
+      transform: translateX(-50%) translateY(132px) scale(0.94);
+      filter: blur(2px);
+      pointer-events: none;
     }
     .receipt-head {
       display: grid;
@@ -1652,16 +1747,29 @@
         opacity: 0;
         transform: translateY(7px);
         filter: blur(1px);
+        clip-path: inset(0 100% 0 0);
       }
-      38% {
+      42% {
         opacity: 0.56;
         transform: translateY(2px);
         filter: blur(0.65px);
+        clip-path: inset(0 28% 0 0);
       }
       100% {
         opacity: 1;
         transform: translateY(0);
         filter: blur(0);
+        clip-path: inset(0 0 0 0);
+      }
+    }
+    @keyframes printhead-scan {
+      0% {
+        left: 2%;
+        opacity: 0.78;
+      }
+      100% {
+        left: 76%;
+        opacity: 0.98;
       }
     }
     @keyframes receipt-sheet-grow {
@@ -2664,6 +2772,11 @@
             本页不涉及真实支付，导出的 PNG 仅用于选购确认与方案沟通。
           </div>
           </div>
+          <div class="receipt-printhead" aria-hidden="true">
+            <span class="receipt-printhead-rail"></span>
+            <span class="receipt-printhead-ink"></span>
+            <span class="receipt-printhead-scan"></span>
+          </div>
         </div>
         <div class="printer-machine" aria-hidden="true">
           <div class="printer-lid"></div>
@@ -2962,9 +3075,9 @@
         if (receiptPhaseCopy) {
           receiptPhaseCopy.textContent =
             phase === 'printing'
-              ? '复古打字机正在逐行敲出这张小票，请稍等片刻。'
+              ? '复古打字机正在逐行压印这张小票，请稍等片刻。'
               : phase === 'printed'
-              ? '敲印完成后，可以把这张小票保存成图片。'
+              ? '打印机已经自然收回，只留下这张成品小票，可直接保存。'
               : phase === 'exported'
               ? '图片已经生成，可直接保存或下载。'
               : '点击结算后，这台现代复古打字机会从底部敲印出一张可保存的小票。';
@@ -2973,9 +3086,9 @@
         if (receiptPhaseIndicator) {
           receiptPhaseIndicator.textContent =
             phase === 'printing'
-              ? '打字中...'
+              ? '压印中...'
               : phase === 'printed'
-              ? '敲印完成'
+              ? '打印完成'
               : phase === 'exported'
               ? '图片已生成'
               : '等待打印';
