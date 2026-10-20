@@ -1,3 +1,5 @@
+> **已归档（2026-10）**：这是 OpenClaw 工作流选购页的静态演示，不再更新。
+
 # OpenClaw Workflow Selector
 
 一个面向用户的单页工作流选购页。
